@@ -1,0 +1,47 @@
+\documentclass[12pt]{article}
+
+% 导入引言区
+\input{sp/Preamble}
+
+% 导入参考文献库
+\addbibresource{refs/ref.bib}
+
+\begin{document}
+
+% 导入定义符号
+\input{sp/Symbol}
+
+\voffset -0.5truecm \hoffset -1.5truecm
+
+% 插入标题、作者信息、摘要和关键词
+\input{data/FrontMatter}
+
+% 插入文章正文
+
+\input{data/Section1}
+\input{data/Section2}
+\input{data/Section3}
+\input{data/Section4}
+\input{data/Section5}
+\input{data/Section6}
+
+% 插入补充材料
+\input{data/Supplementary}
+
+% 插入致谢
+\input{data/Acknowledgement}
+
+% 插入参考文献
+\renewcommand*{\bibfont}{\normalsize\baselineskip 0.30in}
+% \nocite{*}
+\printbibliography[title = {Reference}]
+
+% 插入附录
+\appendix
+\input{data/AppendixA}
+\input{data/AppendixB}
+
+\end{document}
+
+
+

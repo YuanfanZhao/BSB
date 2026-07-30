@@ -1,0 +1,138 @@
+\section{$\!\!\!\!\!\!\!$. Bernstein--Binomial distribution}
+% Section 2
+
+\subsection{Definition and basic properties}   % Section 2.1
+
+Let $\tau$ be a continuous \trv taking values on the unit interval $[0,1]$. If a discrete \trv $X$ has the following \textit{mixture representation} (MR):
+\begin{eqnarray}   \label{eqn2.1}
+   \tau \sim \Bernstein(K, \bla) \qand X|\tau \sim \Binomial(m,\tau),
+\end{eqnarray}
+then $X$ is said to follow the \textit{Bernstein--Binomial} (Bern-Bino) distribution, denoted by $X \sim \BernBino(m, K, \bla)$, where $\{m, K\}$ are two known constants and $\bla = (\la_0, \la_1, \dots, \la_K)^{\T} \in \bbT_{K+1}$ is an unknown weights vector. Its pmf is derived as
+\begin{eqnarray}  \label{eqn2.2}
+   \BernBino(x|m, K, \bla) = \binom{m}{x} \sum_{k=0}^K  a_k(x) \la_k = \binom{m}{x} [\iba(x)]^{\T} \bla, \quad x \in \bbN_{0:m}. \quad
+\end{eqnarray}
+where $\iba(x) =(a_0(x), a_1(x), \dots, a_K(x))^{\T}$ and
+\begin{eqnarray*}
+   a_k(x) = \frac{B(k+1+x, K-k+1+m-x)}{B(k+1,K-k+1)}, \quad k=0, 1, \dots, K.
+\end{eqnarray*}
+
+From the MR (\ref{eqn2.1}), on the one hand, we can obtain
+\begin{eqnarray*}
+   E(X) &=& \frac{m}{K+2} \sum_{k=0}^K (k+1)\la_k \qand   \\ [2mm]
+   \Var(X) &=& m \left\{ \frac{\sum_{k=0}^K (k+1)\la_k}{K+2} - \left[ \frac{\sum_{k=0}^K (k+1)\la_k}{K+2} \right]^2 \right\}  \\ [2mm]
+   & & +\; \frac{m(m-1)}{(K+2)^2(K+3)} \sum_{k=0}^K (k+1)(K-k+1) \la_k.
+\end{eqnarray*}
+On the other hand, we have the \textit{stochastic representation} (SR) of $\tau \sim \Bernstein(K, \bla)$ as
+\begin{eqnarray} \label{zyffour2.3}
+   \tau \sd Z_0 Y_0 + Z_1 Y_1 + \cdots + Z_K Y_K = \ibZ^{\T} \ibY,
+\end{eqnarray}
+where $\ibZ = (Z_0,Z_1,\ldots,Z_K)^{\T} \sim \Multinomial(1,\bla)$, $\{Y_k\}_{k=0}^K \ind \mBeta(k+1,K-k+1)$, and $\ibZ \inde \ibY = (Y_0, Y_1,\ldots, Y_K)^{\T}$. The SR (\ref{zyffour2.3}) can be employed to generate random samples from the $\Bernstein(K, \bla)$ distribution and in the \textit{data augmentation} (DA) algorithm for Bayesian inferences in \S 3.
+
+\begin{remark} \label{rem1} {\rm (\textsf{Alternative expression of pmf for the Bern-Bino distribution}). Based on (\ref{zyffour1.add1}), we can rewrite (\ref{eqn2.2}) as a mixture distribution of $(K+1)$ beta--binomial distributions:
+\begin{eqnarray}  \label{eqn2.TGL4}
+   \BernBino(x|m, K, \bla) \sr{(\ref{eqn2.2})} \sum_{k=0}^K  \la_k \cdot \BetaBino(x|m, k+1, K-k+1), \quad x \in \bbN_{0:m}.
+\end{eqnarray}
+Hence, similar to (\ref{zyffour2.3}), we can obtain the SR of $X \sim \BernBino(m, K, \bla)$ as
+\begin{eqnarray} \label{zyffour2.TGL5}
+   X \sd Z_0 V_0 + Z_1 V_1 + \cdots + Z_K V_K = \ibZ^{\T} \ibV,
+\end{eqnarray}
+where $\ibZ = (Z_0,Z_1,\ldots,Z_K)^{\T} \sim \Multinomial(1,\bla)$, $\{V_k\}_{k=0}^K \ind \BetaBino(m, k+1, K -k+1)$, and $\ibZ \inde \ibV = (V_0, V_1,\ldots, V_K)^{\T}$. The SR (\ref{zyffour2.TGL5}) can be used to alternatively generate random samples from the $\BernBino(m, K, \bla)$ distribution parallel to the MR (\ref{eqn2.1}). \hfill $\|$
+}\end{remark}
+
+
+
+\subsection{MLEs of parameters via an MM algorithm}  % Section 2.2
+
+Let $\{X_i\}_{i=1}^n \iid \BernBino(m, K, \bla)$ and $\Y{obs} = \{x_i\}_{i=1}^n$ denote the observations, then the log-likelihood function of $\bla$ is
+\begin{eqnarray} \label{zyffour2.4}
+   \ell(\bla|\Y{obs}) \sr{(\ref{eqn2.2})} \sum_{i=1}^n \log\binom{m}{x_i} + \sum_{i=1}^n \log \left( \sum_{k=0}^K a_{ik} \la_k \right) = \constant + \sum_{i=1}^n \log (\iba_i^{\T}\bla),
+\end{eqnarray}
+where $\iba_i =(a_{i0}, a_{i1}, \dots, a_{iK})^{\T}$,
+\begin{eqnarray}   \label{zyffour2.5}
+   a_{ik} = \frac{B(k+1+x_i,K-k+1+m-x_i)}{B(k+1,K-k+1)}, \quad i=1, \dots, n, \; k=0, 1, \dots, K,
+\end{eqnarray}
+are positive constants free from $\bla \in \bbT_{K+1}$. The aim of this subsection is to calculate the MLEs of $\bla$ through an MM algorithm.
+
+To this end, we first note the discrete version of Jensen's inequality
+$$
+    \vp\left(\sum_{k=0}^K b_k z_k \right) \ge \sum_{k=0}^K b_k \vp(z_k),
+$$
+for any concave function $\vp(\cdot)$, where $\ibb=(b_0, b_1, \dots, b_K)^{\T} \in \bbT_{K+1}$. For a fixed $i$, by setting $\vp(\cdot) = \log(\cdot)$, we then have the following inequality
+\begin{eqnarray} \label{zyffour2.6}
+   \log (\iba_i^{\T}\bla) \ge \constant + \sum_{k=0}^K \bt{ik} \log(\la_k),
+\end{eqnarray}
+where the weights
+\begin{eqnarray} \label{zyffour2.7}
+   \bt{ik} \teq \frac{a_{ik}\lat_k}{\sum_{l=0}^K a_{il}\lat_l} = \frac{a_{ik}\lat_k}{\iba_i^{\T}\blat}, \quad k=0, 1, \dots, K,
+\end{eqnarray}
+and $\blat =(\lat_0, \lat_1, \dots, \lat_K)^{\T}$ represents the $t$-th approximation of the MLE $\hbla$. By combining (\ref{zyffour2.4}) with (\ref{zyffour2.6}), we can construct a surrogate function as
+\begin{eqnarray*}
+   Q(\bla|\blat) = \constant + \sum_{i=1}^n \sum_{k=0}^K \bt{ik} \log(\la_k) \pr \sum_{k=0}^K \left(\sum_{i=1}^n \bt{ik} \right) \log(\la_k),
+\end{eqnarray*}
+which satisfies $Q(\bla|\blat) \le \ell(\bla|\Y{obs})$ and $Q(\blat|\blat) = \ell(\blat|\Y{obs})$.
+
+Finally, by maximizing the $Q(\bla|\blat)$ with respect to $\bla$, we obtain the MM iterations as
+\begin{eqnarray} \label{zyffour2.8}
+   \latI_k = \frac{\sum_{i=1}^n \bt{ik}} {\sum_{l=0}^K \sum_{i=1}^n \bt{il}} = \frac{\1_n^{\T} \ibbt{k}}{\1_n^{\T} \bBt \1_{K+1}}, \quad k = 0, 1,\ldots, K,
+\end{eqnarray}
+where $\bBt$ is an $n \times (K+1)$ matrix defined by
+$$
+   \bBt \teq (\bt{ik}) = (\ibbt{0}, \ibbt{1}, \dots, \ibbt{K}) \qwi \ibbt{k} = \threev{\bt{1k}}{\vdots}{\bt{nk}}
+$$
+being the $k$-column of $\bBt$, here $\bt{ik}$ is given by (\ref{zyffour2.7}). The MM iterations are repeated until
+$$
+   \bigg|\frac{\ell(\blatI|\Y{obs}) - \ell(\blat|\Y{obs})} {\ell(\blat|\Y{obs})}\bigg| \le \de_0.
+$$
+where $\de_0$ is a pre-specified small positive number.
+
+
+\subsection{Asymptotic normality of MLEs and CIs of parameters}      % Section 2.3
+
+Due to the existence of the constraint $\la_0 = 1 - \sum_{k=1}^K \la_k$ in $\bla = (\la_0, \la_1, \dots, \la_K)^{\T}$, we consider the parameter sub-vector $\bla_{-0} = (\la_1, \dots, \la_K)^{\T}$, where $\la_k \in (0, 1)$ (we do not consider the cases of parameter components with $\la_k = 0$ or $\la_k=1$, indicating that the $k$-th weight is zero or one). One of the key questions in large--sample statistical inferences is to verify the asymptotic normality of MLEs; i.e.,
+\begin{eqnarray*}
+   \sqrt{n} \left(\hbla_{-0, n} - \bla_{-0, \rm true} \right) \srto{D} N(\0, \bSi) \qas n \to \infty,
+\end{eqnarray*}
+where $\hbla_{-0, n}$ denotes the MLE of $\bla_{-0}$ for emphasizing the dependency of $\hbla_{-0}$ on the sample size $n$,  $\bla_{-0, \rm true}$ is the true value of $\bla_{-0}$ and $\bSi$ is the variance--covariance matrix of the asymptotic normal  distribution. The asymptotic normality depends on a series of assumptions known as regularization or Cram\'er--Rao conditions (Lehmann \& Casella 1998 and Lehmann 1999), which are presented in Theorem \ref{thm2} of Appendix A.1. By verifying the Cram\'er--Rao conditions for Bern--Bino distribution (see Appendix A.2 for more details), we obtain the asymptotic normality of $\hbla_{-0, n}$ as
+\begin{eqnarray} \label{zyffour2.9}
+   \sqrt{n}\left(\hbla_{-0, n} - \bla_{-0, \rm true}\right) \srto{D}
+   N \left(\0, \bJ^{-1}(\bla_{-0,\rm true}) \right) \qas n \to \infty,
+\end{eqnarray}
+where $\bJ(\bla_{-0,\rm true})$ is the Fisher information matrix. After obtaining (\ref{zyffour2.9}), by using the delta method, we obtain the asymptotic distribution of $\hla_0 \teq g(\hbla_{-0}) = 1 - \sum_{k=1}^K \hla_k$ as
+$$
+   \sqrt{n} (\hla_{0, n} - \la_{0,\rm true}) \srto{D}
+   N \Big(0, [\na g(\bla_{-0, \rm true})]^{\T} \bJ^{-1}(\bla_{-0, \rm true}) \na g(\bla_{-0, \rm true}) \Big).
+$$
+In practice, we adopt the sandwich covariance matrix estimation to replace $\bJ^{-1}(\bla_{-0, \rm true})$, which can be computed as
+$$
+   \whbSi = \whbH^{-1} \whbS \whbH^{-1},
+$$
+where $\whbS$ is the outer product of scores and $\whbH$ is the observed information matrix
+\begin{eqnarray*}
+   \whbS &=& \frac{1}{n} \sum_{i=1}^n \ibs_i\ibs_i^{\T} \qwi \ibs_i = \na \log p(x_i|\bla_{-0}) \big|_{\bla_{-0} = \hbla_{-0,n}} \qand \\ [2mm]
+   \whbH &=& -\na^2 \log \ell(\bla_{-0}|\Y{obs})\big|_{\bla_{-0} = \hat{\bla}_{-0,n}}.
+\end{eqnarray*}
+Finally, we construct the $100(1-\al)\%$ asymptotic CI of $\la_k$ as $\hla_{k,n} \pm z_{\al/2} \cdot \whse_k$ with standard error $\whse_k = \sqrt{\whbSi_{kk}}$ for $k = 1, \ldots, K$ and $\whse_0 = \sqrt{ [\na g(\hbla_{-0})]^{\T} \whbSi \na g(\hbla_{-0}) }$.
+
+
+\subsection{Bootstrap confidence intervals of $\bla$}  % Section 2.4
+
+The large--sample method to calculate CIs of parameters has two  limitations: (1) The asymptotic CI is not reliable for small to moderate sample sizes; and (2) even though for a large sample size, the range of CI may be beyond its bounds when the true value is close to the bounds. To overcome the two difficulties, this subsection presents the bootstrap method to construct the \textit{bootstrap confidence interval} (BCI) of $\vth \teq h(\bla)$, where $h(\cdot)$ is an arbitrary function of the parameter vector $\bla$ in the $\BernBino(m, K, \bla)$ distribution.
+
+Based on the observations $\Y{obs} = \{x_i\}_{i=1}^n$, we can first compute the MLEs $\hbla$ of $\bla$ through the MM algorithm (\ref{zyffour2.8}). Then, we generate a bootstrap sample $\{X_i^*= x_i^*\}_{i=1}^n \iid\BernBino(m, K, \hbla)$ and compute one bootstrap replication $\hvth^* = h(\hblas)$. Independently repeating this process $G$ times, we obtain $G$ bootstrap replications $\{\hvth^*(g)\}_{g=1}^G$. Hence, a $100(1-\al)$\% BCI of $\vth$ is
+$[\hvth_{\rm L}^*, \  \hvth_{\rm U}^*]$, where $\hvth_{\rm L}^*$ and $\hvth_{\rm U}^*$ are the $(\al/2)G$-th and the $(1-\al/2)G$-th order statistics of $\{\hvth^*(g)\}_{g=1}^G$.
+
+\subsection{Regression model}      % Section 2.5
+
+Assume that $\{X_i\}_{i=1}^n \ind \BernBino(m, K, \bla_i)$ and the observed data be $\Y{obs} = \{x_i, \ibzi\}$, where $\ibzi = (z_{i1}, \ldots, z_{ip})^\top$ is the covariate vector of the $i$-th subject. We consider the following regression model
+\begin{eqnarray*}
+    && \la_{ik} = \frac{\exp(\eta_{ik})}{\sum_{l=0}^K \exp(\eta_{il})}, \quad i = 1, \ldots, n, \qwh \\ [2mm]
+    && \eta_{ik} = \phi_k + \ga_k \cdot \ibzi^\top \bbe, \quad k = 0, 1, \ldots, K \qwi \phi_0 = 0, \; \ga_0 = 1.
+\end{eqnarray*}
+The log-likelihood function of $\bth = (\bphi^{\T}, \bga^{\T}, \bbe^{\T})^{\T}$ is given by
+$$
+    \ell(\bth|\Y{obs}) = \sum_{i=1}^n \log\binom{m}{x_i} + \sum_{i=1}^n \log \left( \sum_{k=0}^k a_{ik} \la_{ik} \right).
+$$
+By calculating the score vector $\ibs(\bth)$ and Hessian matrix $\bH(\bth)$, we adopt the Newton--Raphson algorithm to compute the MLE $\hbth$ of parameter $\bth$ as
+$$
+    \bthtt = \btht - \bH^{-1} (\btht) \ibs(\btht).
+$$

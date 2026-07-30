@@ -1,0 +1,65 @@
+\section{$\!\!\!\!\!\!\!$. Some Technical Derivations}      % Appendix A
+
+\subsection{Asymptotic normality theorem for MLE}       % Section A.1
+
+Suppose that $\{X\}_{i=1}^n \iid F(x|\theta)$, the likelihood function be expressed as $\mathcal{L}_n(\theta)$. Then we calculate the MLE $\hth_n$. To study the consistency and asymptotic normality of $\hth_n$, we need a laundry list of assumptions, which has come to be known as the Cram\'er--Rao conditions (\cite{LC1998} and \cite{Lehmann1999}).
+\begin{theorem} \label{thm2} {\bf (Cram\'er--Rao conditions)} \\
+    {\rm
+    Let $X_1, \ldots, X_n$ be i.i.d. \trv with density $f(x|\bth)$ (or discrete case with probability $\mpr(x|\bth)$) and \textit{cumulative distribution function} (cdf) $F(x|\bth)$. In order to study the consistency and asymptotic normality of MLE $\hbth_n$ of parameter $\bth$, we assume the following conditions:
+    \begin{namelist}{0123}
+                \item[\hspace*{-0.05cm} (A1)]   Identifiability, that is, $F(x|\bth_1) = F(x|\bth_2) \Longleftrightarrow \bth_1 = \bth_2$;
+
+                \item[\hspace*{-0.05cm} (A2)]   $\bth\in\bTh$ is an open interval in $\bbR^{d}$;
+
+                \item[\hspace*{-0.05cm} (A3)]   The observations are $X = (X_1,\ldots,X_n)$, where the $X_i$ are i.i.d. either with probability density $f(x|\bth)$ which will be assumed to be continuous in $x$ (the continuous case), or discrete with probabilities $\Pr(x|\bth)$ (the discrete case).
+
+                \item[\hspace*{-0.05cm} (A4)]   The support $\mathbb{S} = \{x: \ f(x|\bth) > 0\}$ is free from $\bth$;
+
+                \item[\hspace*{-0.05cm} (A5)]   $\forall \ x \in \mathbb{S}$, $f(x|\bth)$ or $\Pr(x|\bth)$ is differentiable with respect to $\bth$, that is, the likelihood function is smooth as a function of the parameter.
+    \end{namelist}
+    Let $\bth_0 \in \bTh$ be the true value of $\bth$. Then there exists a sequence $\hbth_n$ such that $\hbth_n \rightarrow \bth_0$ in probability. Under the condition of consistency, Assumption (A6) and (A7) provide sufficient conditions for the asymptotic normality of $\hbth_n$.
+    \begin{namelist}{0123}
+                \item[\hspace*{-0.05cm} (A6)]   For all $x \in \bbS$ (specified in (A4)), the density $f(x|\bth)$ is three times differentiable with respect to $\bth$ and the third derivative is continuous. The corresponding integral (or sum in discrete case) of partial derivative
+                $$
+                    \int \frac{\pa^3 f(x|\bth)}{\pa\theta_r \pa\theta_s \pa\theta_t} \rd x
+                $$
+                can be obtained by differentiating under the integral sign (or sum);
+
+                \item[\hspace*{-0.05cm} (A7)]   There exists a positive number $c(\bth_0)$ and a function $M_{\bth_0}(x)$ such that
+                \begin{eqnarray}
+                    \bigg|\frac{\pa^3}{\pa\theta_r \pa\theta_s \pa\theta_t}\log f(x|\bth)\bigg| \le M_{\bth_0}(x) \ \mbox{ for all } \ x\in\bbS, \ ||\bth-\bth_0|| < c(\bth_0), \nonumber
+                \end{eqnarray}
+                and $E_{\bth_0}(M_{\bth_0}(X)) < \infty$.
+    \end{namelist}
+    Then any consistent sequence $\hbth_n$ satisfies
+    \begin{eqnarray}
+        \sqrt{n}\left(\hbth_n-\bth_0\right) \overset{\text{D}}{\rightarrow} N \left(0, \bJ^{-1}(\bth_0)\right), \nonumber
+    \end{eqnarray}
+     where $\bJ(\bth)=[J_{ij}(\bth)]$ with
+    \begin{eqnarray}
+        J_{ij}(\bth) = -E\left[\frac{\partial^2}{\partial\theta_i\partial\theta_j} \log \mathcal{L}(\bth|\ibX)\right] \nonumber
+    \end{eqnarray}
+    is the Fisher information matrix, here $\ibX = (X_1, \ldots, X_n)$.
+    }  \hfill $\|$
+\end{theorem}
+
+\subsection{Validation of Cram\'er--Rao conditions for Bern--Bino distribution}        % Section A.2
+
+Suppose that $\{X_i\}_{i=1}^n \iid \BernBino(m, K, \bla)$ with $\bla \in \bbT_{K+1}^{\rm open}$, which satisfies Assumption (A3) in Theorem (\ref{thm2}) with discrete case. And the pmf of $X_i$ is given by
+\begin{eqnarray*}
+   \BernBino(x_i|m, K, \bla) \sr{(\ref{eqn2.2})} \binom{m}{x_i} \sum_{k=0}^K a_{ik} \la_k, \quad x_i \in \bbN_{0:m},
+\end{eqnarray*}
+where the parameter $\bla$ is identifiability (reason in Section 1.2) and $\bbT_{K+1}^{\rm open}$ is a open set in $\bbR^{K+1}$, which satisfies Assumption (A1), (A2). The support $\bbS_{X_i}= \bbN_{0:m}$ is free from $\bla$, therefore, the Assumption (A4) holds. The log-likelihood function of $\bla$ is
+\begin{eqnarray*}
+   \ell(\bla|\Y{obs}) \sr{(\ref{zyffour2.4})} \sum_{i=1}^n \log\binom{m}{x_i} + \sum_{i=1}^n \log \left(\sum_{k=0}^K a_{ik}\la_k \right) \qwi  \bla \in \bbT_{K+1}^{\rm open},
+\end{eqnarray*}
+which is a smooth function for $\bla_{-0}$ with partial derivatives
+\begin{eqnarray}
+    \frac{\partial\ell(\bla|\Y{obs})}{\partial\la_r} &=& \sum_{i=1}^n \frac{a_{ir} - a_{i0}}{\sum_{l=0}^K a_{il}\la_l} \qand \nonumber \\ [2mm]
+    \frac{\partial^3\ell(\bla|\Y{obs})}{\partial\la_r\partial\la_s\partial\la_t} &=& \sum_{i=1}^n \frac{2(a_{ir}-a_{i0})(a_{is}-a_{i0})(a_{it}-a_{i0})}{(\sum_{l=0}^K a_{il}\la_l)^3},\quad r,s,t = 1, \ldots, K. \nonumber
+\end{eqnarray}
+Because pmf is a linear function of $\la_k$, which has good properties, so the log-likelihood function is third times differentiable and the derivative function is continuous. In the neighbor of true value $\bla_{-0,\rm true}$, we can choose a small enough constant $c(\bla_{-0,\rm true})$ such that all $\la_k \ge \delta > 0$. Therefore, we obtain the upper bound
+\begin{eqnarray}
+    \bigg|\frac{\partial^3\ell(\bla|\Y{obs})}{\partial\la_r\partial\la_s\partial\la_t}\bigg| \le \frac{2c_{\max}^3}{(\delta c_{\min})^3} \nonumber
+\end{eqnarray}
+is a constant that does not depend on $x$ or the indicators $r,s,t$, where $c_{\max} = \max\{|a_{ik} - a_{i0}| \; \big| \; i=1,\ldots,n, \ k = 0,1,\ldots,K\}$ and $c_{\min} = \min\limits_{1 \le i \le n, 0\le k\le K} a_{ik}$ are two constants. Then the three times partial derivative has upper bound function $M_{\bla_{-0,\rm true}}(x) = 2c_{\max}^3/(\delta c_{\min})^3$ with finite moment $E[M_{\bla_{-0,\rm true}}(X)] = 2c_{\max}^3/(\delta c_{\min})^3 < \infty$. Therefore, we verified Assumption (A5), (A6) and (A7) hold. In conclusion, for $\bla_{-0} \in \bbT_{K}^{\rm open}$, Bernstein–Binomial distribution satisfy the Cram\'er–Rao conditions.

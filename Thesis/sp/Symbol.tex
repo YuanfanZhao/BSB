@@ -1,0 +1,664 @@
+% 0. Example et al
+
+%\renewcommand{\theequation}{\thesection.\arabic {equation}}
+\theoremstyle{plain}
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{lemma}{Lemma}%[section]
+\newtheorem{property}{Property}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{theorem}{Theorem}%[section]
+\newtheorem{Table}{Table}
+\newtheorem{proof}{Proof}
+%\renewcommand{\qedsymbol}{}
+
+
+% 1. Empty-style
+
+\newcommand{\bbB}{{\mathbb{B}}}
+\newcommand{\bbC}{{\mathbb{C}}}
+\newcommand{\bbD}{{\mathbb{D}}}
+\newcommand{\bbE}{{\mathbb{E}}}
+\newcommand{\bbI}{{\mathbb{I}}}
+\newcommand{\bbJ}{{\mathbb{J}}}
+\newcommand{\bbK}{{\mathbb{K}}}
+\newcommand{\bbN}{{\mathbb{N}}}
+\newcommand{\bbO}{{\mathbb{O}}}
+\newcommand{\bbP}{{\mathbb{P}}}
+\newcommand{\bbR}{{\mathbb{R}}}
+\newcommand{\bbS}{{\mathbb{S}}}
+\newcommand{\bbT}{{\mathbb{T}}}
+\newcommand{\bbV}{{\mathbb{V}}}
+\newcommand{\bbX}{{\mathbb{X}}}
+\newcommand{\bbY}{{\mathbb{Y}}}
+
+
+% 2. Calligraphic
+
+\newcommand{\cA}{{\cal A}}         \newcommand{\dA}[1]{{\cal A}_{#1}}
+\newcommand{\cB}{{\cal B}}         \newcommand{\dB}[1]{{\cal B}_{#1}}
+\newcommand{\cI}{{\cal I}}
+\newcommand{\cJ}{{\cal J}}
+\newcommand{\cK}{{\cal K}}
+\newcommand{\cN}{{\cal N}}
+\newcommand{\cO}{{\cal O}}
+\newcommand{\cP}{{\cal P}}
+\newcommand{\cS}{{\cal S}}         \newcommand{\dS}[1]{{\cal S}_{#1}}
+\newcommand{\cR}{{\cal R}}
+\newcommand{\cT}{{\cal T}}
+\newcommand{\cU}{{\cal U}}
+\newcommand{\cV}{{\cal V}}
+\newcommand{\cX}{{\cal X}}
+\newcommand{\cY}{{\cal Y}}
+\newcommand{\cZ}{{\cal Z}}
+
+
+% 3. Function
+
+\newcommand{\f}[1]{f_{_{\tiny\rm #1}}}  \newcommand{\hf}[1]{\hat{f}_{#1}}
+\newcommand{\tf}[2]{f_{{#1}}^{{#2}}}
+
+\newcommand{\h}[1]{h_{_{\tiny\rm #1}}}
+\newcommand{\n}[1]{n_{_{\tiny\rm #1}}}
+\newcommand{\q}[2]{q_{_{\tiny\rm #1\!, \, #2}}}
+\newcommand{\del}[1]{\delta_{_{\tiny\rm #1}}}
+\newcommand{\pii}[2]{\pi_{_{\tiny\rm #1\!, \, #2}}}
+
+
+
+\newcommand{\y}[2]{y_{#1}^{\rm #2}}
+\newcommand{\yb}[1]{{\bar{y}^{\rm #1}}}
+\newcommand{\Y}[1]{Y_{\rm #1}}
+\newcommand{\YY}[1]{Y_{\! \mbox{\scriptsize #1}}}
+\newcommand{\Two}[2]{{#1}_{_{\textrm{#2}}}}
+
+
+\newcommand{\no}[2] {   \| #1 \|_{_{#2}}   }
+\newcommand{\nor}[3]{\|#1\|_{_{#2}}^{#3}}
+
+
+
+\newcommand{\bismall}[2]{(\!\!\begin{array}{c} #1 \\ \vspace*{-0.6cm} \\ #2 \end{array} \!\! )}
+\newcommand{\bi}[2]{\Big(\!\!\begin{array}{c} #1 \\ #2 \end{array} \!\!\Big)}
+\newcommand{\twoc}[2]{\bigg(\!\!\begin{array}{c} #1 \\ #2  \end{array} \!\!\bigg)}
+\newcommand{\twolr}[2]{\left(\!\!\begin{array}{c} #1 \\ #2  \end{array} \!\!\right)}
+
+\newcommand{\twob}[2]{\lbrace {#1 \atop #2} \rbrace}
+\newcommand{\twoB}[2]{\bigg\{\!\!\begin{array}{c} #1 \\ #2  \end{array} \!\!\bigg\}}
+
+
+\newcommand{\fourc}[4]{\bigg(\!\!\begin{array}{cc} #1 & #2 \\ #3 & #4 \end{array} \!\!\bigg)}
+\newcommand{\fourlr}[4]{\left(\!\!\begin{array}{cc} #1 & #2 \\ #3 & #4 \end{array} \!\!\right)}
+\newcommand{\Cases}[4]{\left\{\!\!\begin{array}{ll} #1, & #2,  \\ [3mm]
+                                                    #3, & #4  \end{array} \right. }
+
+\newcommand{\threec}[3]{\left(\!\!\begin{array}{c} #1 \\ #2 \\ #3  \end{array} \!\!\right)}
+\newcommand{\threetwo}[6]{\left(\!\!\begin{array}{cc}
+#1 & #2 \\
+#3 & #4 \\
+#5 & #6
+\end{array} \!\!\right)}
+
+\newcommand{\threethree}[9]{\left(\!\!\begin{array}{ccc}
+#1 & #2 & #3 \\
+#4 & #5 & #6 \\
+#7 & #8 & #9
+\end{array} \!\!\right)}
+
+
+
+\newcommand{\sr}[1]{\stackrel{#1}{=}}
+\newcommand{\srto}[1]{\stackrel{\rm #1}{\to}}
+\newcommand{\sle}[1]{\stackrel{#1}{\le}}
+\newcommand{\sgr}[1]{\stackrel{#1}{\ge}}
+\newcommand{\sge}[1]{\stackrel{#1}{\ge}}
+\newcommand{\mc}[1]{\multicolumn{1}{c}{#1}}
+\newcommand{\MC}[3]{\multicolumn{#1}{#2}{#3}}
+\newcommand{\MR}[3]{\multirow{#1}{#2}{#3}}
+\newcommand{\TC}[4]{\contentsline {#1}{\numberline {#2}#3}{#4}}
+\newcommand{\LIST}[3]{\contentsline {section}{\numberline {\hspace*{-0.5cm}#1}#2}{#3}}
+
+
+\newcommand{\Hpi}[1]{\hat{\pi}_{_{\tiny\rm #1}}}
+\newcommand{\titem}[1]{\vspace*{-0.15cm}\item[{\rm #1} ]\hspace*{0.1cm}}
+\newcommand{\ub}[1]{\underline{\bf #1}}
+\newcommand{\RED}[1]{{\color{red} #1}}      \newcommand{\redbf}[1]{{\color{red} \bf #1}}
+\newcommand{\GREEN}[1]{{\color{green} #1}}
+\newcommand{\BLUE}[1]{{\color{blue} #1}}
+
+
+\newcommand{\two}[2]{{#1}_{_{\tiny\rm #2}}}
+\newcommand{\three}[3]{{#1}_{_{#2, \tiny\rm #3}}}
+
+\newcommand{\threev}[3]{\left(\!\!\begin{array}{c} #1 \\   #2 \\   #3 \end{array} \!\!\right)}
+
+\newcommand{\at}[1]{a^{(t)}_{#1}}
+\newcommand{\bt}[1]{b^{(t)}_{#1}}
+\newcommand{\ct}[1]{c^{(t)}_{#1}}       \newcommand{\Ct}[1]{C^{(t)}_{#1}}
+\newcommand{\dt}[1]{d^{(t)}_{#1}}
+\newcommand{\gt}[1]{g^{(t)}_{#1}}
+\newcommand{\pt}[1]{p^{(t)}_{#1}}  \newcommand{\ibpt}[1]{\ibp^{(t)}_{#1}}
+\newcommand{\rt}[1]{r^{(t)}_{#1}}
+\newcommand{\st}[1]{s^{(t)}_{#1}}
+
+
+% 4. bold 0 & 1
+
+\newcommand{\0}{{\bf 0}\!\!\!{\bf 0}}
+\newcommand{\1}{{\bf 1}\!\!\!{\bf 1}}        \def\b1{{\bf 1\!\!\!1}}  % Letter + number
+\newcommand{\2}{{\bf 2}\!\!\!{\bf 2}}        \def\b2{{\bf 2\!\!\!2}}  % Letter + number
+
+
+% 5. bold English Letter
+
+% 5.1    lowercase
+\newcommand{\ba}{{\bf a}}
+\newcommand{\bb}{{\bf b}}
+\newcommand{\bd}{{\bf d}}
+\newcommand{\bn}{{\bf n}}
+\newcommand{\bm}{{\bf m}}
+\newcommand{\bp}{{\bf p}}
+\newcommand{\bq}{{\bf q}}
+\newcommand{\br}{{\bf r}}
+\newcommand{\bs}{{\bf s}}
+%\newcommand{\bt}{{\bf t}}
+\newcommand{\bu}{{\bf u}}
+\newcommand{\bv}{{\bf v}}
+\newcommand{\bw}{{\bf w}}
+\newcommand{\bx}{{\bf x}}
+\newcommand{\by}{{\bf y}}
+\newcommand{\bz}{{\bf z}}
+
+
+% 5.2    uppercase
+\newcommand{\bA}{{\bf A}}
+\newcommand{\bB}{{\bf B}}
+\newcommand{\bC}{{\bf C}}
+\newcommand{\bD}{{\bf D}}
+\newcommand{\bG}{{\bf G}}
+\newcommand{\bH}{{\bf H}}
+\newcommand{\bI}{{\bf I}}
+\newcommand{\bJ}{{\bf J}}
+\newcommand{\bL}{{\bf L}}
+\newcommand{\bM}{{\bf M}}
+\newcommand{\bO}{{\bf O}}
+\newcommand{\bP}{{\bf P}}
+\newcommand{\bQ}{{\bf Q}}
+\newcommand{\bR}{{\bf R}}
+\newcommand{\bS}{{\bf S}}
+\newcommand{\bT}{{\bf T}}
+\newcommand{\bU}{{\bf U}}
+\newcommand{\bV}{{\bf V}}
+\newcommand{\bW}{{\bf W}}
+\newcommand{\bX}{{\bf X}}
+\newcommand{\bY}{{\bf Y}}
+\newcommand{\bZ}{{\bf Z}}
+
+
+% 5.3 italic English Letter
+
+\newcommand{\iba}{{\boldsymbol{a}}}    \newcommand{\ibA}{{\boldsymbol{A}}}
+\newcommand{\ibb}{{\boldsymbol{b}}}    \newcommand{\ibB}{{\boldsymbol{B}}}
+                                       \newcommand{\ibC}{{\boldsymbol{C}}}
+                                       \newcommand{\ibD}{{\boldsymbol{D}}}
+
+\newcommand{\ibh}{{\boldsymbol{h}}}    \newcommand{\ibH}{{\boldsymbol{H}}}
+
+\newcommand{\ibI}{{\boldsymbol{I}}}
+\newcommand{\ibJ}{{\boldsymbol{J}}}
+\newcommand{\ibla}{{\boldsymbol{\lambda}}}
+\newcommand{\ibe}{{\bfm e}}
+\newcommand{\ibm}{{\bfm m}}
+\newcommand{\ibn}{{\bfm n}}             \newcommand{\ibN}{{\boldsymbol{N}}}
+
+\newcommand{\ibp}{{\boldsymbol{p}}}     \newcommand{\ibP}{{\boldsymbol{P}}}
+\newcommand{\ibr}{{\boldsymbol{r}}}
+\newcommand{\ibs}{{\boldsymbol{s}}}
+\newcommand{\ibt}{{\bfm t}}
+\newcommand{\ibu}{{\boldsymbol{u}}}
+\newcommand{\ibv}{{\boldsymbol{v}}}
+\newcommand{\ibw}{{\boldsymbol{w}}}
+\newcommand{\ibx}{{\boldsymbol{x}}}
+\newcommand{\ibxizga}{\ibx_i, \ibz_{(i)}, \bga}
+\newcommand{\ibxizgat}{\ibx_i, \ibz_{(i)}, \bga^{(t)}}
+
+\newcommand{\ibX}{{\boldsymbol{X}}}
+\newcommand{\iby}{{\boldsymbol{y}}}     \newcommand{\ibY}{{\boldsymbol{Y}}}
+\newcommand{\ibz}{{\boldsymbol{z}}} \newcommand{\ibzt}{\ibz^{(t)}}
+\newcommand{\ibzi}{\ibz_{(i)}}
+\newcommand{\ibziT}{\ibz_{(i)}^{\T}}
+
+\newcommand{\ibZ}{{\boldsymbol{Z}}}
+\newcommand{\ibT}{{\boldsymbol{T}}}
+\newcommand{\ibW}{{\boldsymbol{W}}}
+
+% 6. hat,  tilde,  bar
+
+% 6.1    hat
+\newcommand{\hb}{\hat{b}}   \newcommand{\hbB}{\boldsymbol{\hat{\rm B}}}
+\newcommand{\hm}{\hat{m}}
+\newcommand{\hp}{\hat{p}}
+\newcommand{\hq}{\hat{q}}
+\newcommand{\hR}{\hat{R}}
+
+
+
+\newcommand{\hbr}{\hat{\br}}
+
+
+\newcommand{\hth}{\hat{\theta}}   \newcommand{\hTh}{\hat{\Theta}}
+\newcommand{\hbth}{\boldsymbol{\hth}}
+\newcommand{\hvth}{\hat{\vartheta}}
+\newcommand{\hmu}{\hat{\mu}}    \newcommand{\hbmu}{\boldsymbol{\hmu}}
+\newcommand{\hsi}{\hat{\sigma}}   \newcommand{\hSi}{\hat{\Sigma}}   \newcommand{\hbSi}{\boldsymbol{\hSi}}
+\newcommand{\hal}{\hat{\alpha}}   \newcommand{\hbe}{\hat{\beta}}     \newcommand{\hbbe}{\bfm{\hat \beta}}
+\newcommand{\hbal}{\boldsymbol{\hal}}
+\newcommand{\hga}{\hat{\gamma}}  \newcommand{\hbga}{\boldsymbol{\hga}}
+\newcommand{\hpsi}{\hat{\psi}}
+\newcommand{\hxi}{\hat{\xi}}
+\newcommand{\hpi}{\hat{\pi}} \newcommand{\hbpi}{\boldsymbol{\hpi}}
+\newcommand{\hla}{\hat{\lambda}}  \newcommand{\hbla}{\bfm{{\hat \lambda}}}
+\newcommand{\hde}{\hat{\delta}}
+\newcommand{\hvp}{\hat{\varphi}}    \newcommand{\hbvp}{\boldsymbol{\hvp}}
+\newcommand{\hrho}{\hat{\rho}}
+\newcommand{\hbrho}{\boldsymbol{\hrho}}
+\newcommand{\hbphi}{\bfm{\hat \phi}}
+\newcommand{\hphi}{\hat \phi}
+
+% 6.2    wide hat
+\newcommand{\whVar}{\widehat{\mbox{Var}}}
+\newcommand{\whse}{\widehat{\mbox{se}}}
+\newcommand{\whSe}{\widehat{\mbox{Se}}}
+\newcommand{\whPr}{\widehat{\Pr}}
+
+\newcommand{\whbH}{\widehat{\bH}}
+\newcommand{\whbS}{\widehat{\bS}}
+\newcommand{\whbSi}{\widehat{\bSi}}
+
+
+% 6.3    tilde
+
+
+\newcommand{\tp}{\tilde{p}}
+
+
+\newcommand{\tD}{\tilde{D}}
+\newcommand{\tQ}{\tilde{Q}}
+\newcommand{\tx}{\tilde{x}}
+\newcommand{\ty}{\tilde{y}}
+
+\newcommand{\tth}{\tilde{\theta}}     \newcommand{\tbth}{{\bfm \tth}}
+\newcommand{\tpi}{\tilde{\pi}}
+\newcommand{\tmu}{\tilde{\mu}}
+\newcommand{\tbe}{\tilde{\beta}}
+\newcommand{\tga}{\tilde{\gamma}}
+\newcommand{\tsi}{\tilde{\sigma}}     \newcommand{\tSi}{\tilde{\Sigma}}
+\newcommand{\tpsi}{\tilde{\psi}}
+\newcommand{\txi}{\tilde{\xi}}
+\newcommand{\tvp}{\tilde{\varphi}}
+
+
+
+% 6.4     Bar
+\newcommand{\Ba}{\bar{a}}       \newcommand{\Bat}[1]{\Ba_{#1}^{(t)}}
+\newcommand{\Bb}{\bar{b}}       \newcommand{\Bbt}[1]{\Bb_{#1}^{(t)}}
+\newcommand{\Bd}{\bar{d}}       \newcommand{\Bdt}[1]{\Bd_{#1}^{(t)}}
+\newcommand{\Bs}{\bar{s}}       \newcommand{\Bst}[1]{\Bs_{#1}^{(t)}}
+\newcommand{\Bt}{\bar{t}}
+\newcommand{\Bu}{\bar{u}}
+\newcommand{\Bv}{\bar{v}}
+\newcommand{\Bw}{\bar{w}}
+\newcommand{\Bx}{\bar{x}}
+\newcommand{\By}{\bar{y}}       \newcommand{\BY}{\bar{Y}}
+\newcommand{\Bz}{\bar{z}}
+
+\newcommand{\Bxi}{\bar{\xi}}
+\newcommand{\Bvth}{\bar{\vth}}
+
+\newcommand{\BVar}{\overline{\mbox{Var}}}
+
+
+% 7. Greek Letter
+
+\newcommand{\al}{\alpha}            \newcommand{\alt}{\alpha^{(t)}}
+                                    \newcommand{\altI}{\alpha^{(t+1)}}
+\newcommand{\be}{\beta}
+\newcommand{\ga}{\gamma}            \newcommand{\Ga}{\Gamma}
+\newcommand{\gat}{\gamma^{(t)}}
+\newcommand{\de}{\delta}            \newcommand{\De}{\Delta}
+\newcommand{\la}{\lambda}           \newcommand{\lat}{\la^{(t)}}
+                                    \newcommand{\latI}{\la^{(t+1)}}
+\newcommand{\La}{\Lambda}
+%\newcommand{\si}{\sigma}            \renewcommand{\Si}{\Sigma} %% tian
+%\newcommand{\si}{\sigma}           \newcommand{\Si}{\Sigma}
+%\newcommand{\tha}{\theta}            \newcommand{\Th}{\Theta}
+\newcommand{\tht}{\theta^{(t)}}
+\newcommand{\thx}{\theta_x}         \newcommand{\Thx}{\Theta_x}
+\newcommand{\thy}{\theta_y}
+\newcommand{\piit}{\pi_i^{(t)}}
+
+
+\newcommand{\ka}{\kappa}
+\newcommand{\om}{\omega}            \newcommand{\Om}{\Omega}
+
+\newcommand{\ve}{\varepsilon}
+\newcommand{\vp}{\varphi}
+\newcommand{\vr}{\varrho}
+\newcommand{\vth}{\vartheta}
+
+
+% 8. Bold Greek Letter
+
+\newcommand{\bxi}{{\bfm \xi}}              \newcommand{\bet}{{\bfm \eta}}
+\newcommand{\bphi}{{\boldsymbol{\phi}}}    \newcommand{\bphit}{\bphi^{(t)}}
+
+\newcommand{\bmu}{{\boldsymbol{\mu}}}      \newcommand{\bnu}{{\boldsymbol{\nu}}}
+\newcommand{\bla}{{\boldsymbol{\lambda}}}  \newcommand{\bLa}{{\bfm \Lambda}}
+\newcommand{\bSi}{{\bfm \Sigma}}
+\newcommand{\bom}{{\bfm \omega}}   \newcommand{\bOm}{{\bfm \Omega}}
+\newcommand{\bde}{{\bfm \delta}}   \newcommand{\bDe}{{\bfm \Delta}}
+\newcommand{\bth}{{\boldsymbol{\theta}}} \newcommand{\btht}{\bth^{(t)}}
+\newcommand{\bTh}{{\boldsymbol{\Theta}}}
+\newcommand{\bsi}{{\bfm \sigma}}
+\newcommand{\bal}{{\boldsymbol{\alpha}}}
+\newcommand{\bbe}{{\boldsymbol{\beta}}}
+\newcommand{\brho}{{\boldsymbol{\rho}}}
+
+\newcommand{\bpsi}{{\bfm \psi}}          \newcommand{\bPsi}{{\bfm \Psi}}
+\newcommand{\bpi}{{\boldsymbol{\pi}}}    \newcommand{\bpit}{\bpi^{(t)}}
+\newcommand{\bga}{{\boldsymbol{\gamma}}} \newcommand{\bgat}{\bga^{(t)}}
+\newcommand{\bvp}{{\bfm \varphi}}        \newcommand{\bvpt}{\bvp^{(t)}}
+
+% 9. distribution
+
+\newcommand{\Bernoulli}{\mbox{Bernoulli}}
+\newcommand{\Binomial}{\mbox{Binomial}}
+%\newcommand{\PBb}{\mbox{PB}_{\rm b}}
+\newcommand{\BBB}{\mbox{Bernoulli}_2^{\rm bk}}
+\newcommand{\BBinomial}{\mbox{BBinomial}}
+\newcommand{\Categorical}{\mbox{Categorical}}
+\newcommand{\CP}{\mbox{CP}}
+\newcommand{\D}{\mbox{D}}
+\newcommand{\Degenerate}{\mbox{Degenerate}}
+\newcommand{\DExponential}{\mbox{DExponential}}
+\newcommand{\Dirichlet}{\mbox{\rm Dirichlet}}
+\newcommand{\DMultinomial}{\mbox{DMultinomial}}
+\newcommand{\Exponential}{\mbox{Exponential}}
+\newcommand{\FDiscrete}{\mbox{FDiscrete}}
+\newcommand{\Finite}{\mbox{Finite}}
+\newcommand{\GD}{\mbox{GD}}
+\newcommand{\GDirichlet}{\mbox{\rm GDirichlet}}
+\newcommand{\GLiouville}{\mbox{GLiouville}}
+\newcommand{\GPoisson}{\mbox{GPoisson}}
+\newcommand{\GP}{\mbox{GP}}  \newcommand{\GPI}{\GP^{\mbox{\scriptsize{(I)}}}} \newcommand{\GPII}{\GP^{\mbox{\scriptsize{(II)}}}}
+\newcommand{\Hgeometric}{\mbox{Hgeometric}}
+\newcommand{\HPP}{\mbox{HPP}}
+\newcommand{\IBeta}{\mbox{IBeta}}
+\newcommand{\Ichi}{\mbox{I}\raisebox{0.5ex}{$\chi$}}
+\newcommand{\IGamma}{\mbox{IGamma}}
+\newcommand{\IGaussian}{\mbox{IGaussian}}
+\newcommand{\IWishart}{\mbox{IWishart}}
+\newcommand{\Laplace}{\mbox{Laplace}}
+\newcommand{\Liouville}{\mbox{Liouville}}
+\newcommand{\Logistic}{\mbox{Logistic}}
+\newcommand{\Lognormal}{\mbox{Lognormal}}
+\newcommand{\mBeta}{\mbox{Beta}}
+\newcommand{\mGamma}{\mbox{Gamma}}
+\newcommand{\mGaI}{\mbox{Ga}}
+
+\newcommand{\Multinomial}{\mbox{Multinomial}}
+\newcommand{\NBinomial}{\mbox{NBinomial}}
+\newcommand{\ND}{\mbox{ND}}
+\newcommand{\NDirichlet}{\mbox{NDirichlet}}
+\newcommand{\NHPP}{\mbox{NHPP}}
+\newcommand{\NIW}{\mbox{NIW}}
+\newcommand{\Pareto}{\mbox{Pareto}}
+\newcommand{\Poisson}{\mbox{Poisson}}
+\newcommand{\TBeta}{\mbox{TBeta}}
+\newcommand{\Wishart}{\mbox{Wishart}}
+\newcommand{\ZIP}{\mbox{ZIP}}
+\newcommand{\ZTP}{\mbox{ZTP}}
+\newcommand{\ZAP}{\mbox{ZAP}}
+\newcommand{\VZIP}{\mbox{VZIP}}
+\newcommand{\ZDP}{\mbox{ZDP}}
+
+
+
+%\newcommand{\f}[1]{f_{_{\tiny\rm #1}}}  \newcommand{\hf}[1]{\hat{f}_{#1}}
+
+% 10. mbox -- statistics
+
+\newcommand{\rhor}{\rho^{^{\rm real}}}
+\newcommand{\rhof}{\rho^{^{\tiny \rm fit}}}
+
+\newcommand{\AIC}{\mbox{AIC}}
+\newcommand{\BIC}{\mbox{BIC}}
+\newcommand{\Corr}{\mbox{Corr}} \newcommand{\CorrR}{\Corr^{\small \rm{R}}} \newcommand{\CorrF}{\Corr^{\small \rm{fit}}}
+\newcommand{\Cov}{\mbox{Cov}}
+\newcommand{\sol}{\mbox{sol}}
+\newcommand{\se}{\mbox{se}}
+
+\newcommand{\SE}{\mbox{SE}}
+\newcommand{\sgn}{{\rm sgn}}
+\newcommand{\tr}{\mbox{$\,$tr$\,$}}
+\newcommand{\rank}{\mbox{rank}\,}
+\newcommand{\Var}{\mbox{Var}}
+\newcommand{\Skew}{\mbox{Skew}}
+\newcommand{\MSE}{\mbox{MSE}}
+\newcommand{\CV}{\mbox{CV}}
+\newcommand{\median}{\mbox{median}}
+
+\newcommand{\logit}{\mbox{logit}}
+\newcommand{\diag}{\mbox{diag}}
+\newcommand{\data}{\mbox{data}}
+\newcommand{\KL}{\mbox{KL}}
+\newcommand{\IG}{\mbox{IG}}
+\newcommand{\ISE}{\mbox{ISE}}
+
+
+\newcommand{\qand}{\quad \mbox{and} \quad}
+\newcommand{\qqand}{\quad \qand \quad}
+\newcommand{\qas}{\quad \mbox{as} \quad}
+\newcommand{\qag}{\quad \mbox{against} \quad}
+\newcommand{\qfor}{\quad \mbox{for} \quad}
+\newcommand{\qor}{\quad \mbox{or} \quad}
+\newcommand{\qve}{\quad \mbox{versus} \quad}
+\newcommand{\qwh}{\quad \mbox{where} \quad}
+\newcommand{\qwi}{\quad \mbox{with} \quad}
+\newcommand{\col}{\mbox{: }}
+\newcommand{\RE}{\mbox{RE}}
+\newcommand{\yes}{\mbox{yes}}
+\newcommand{\No}{\mbox{no}}
+\newcommand{\DPP}{\mbox{DPP}}
+
+\newcommand{\rd}{\,\mbox{d}}
+%\newcommand{\e}{\mbox{e}}
+\newcommand{\w}{\mbox{w}}
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\le}{\leqslant}
+\newcommand{\Zp}{Z\hspace{0.02cm}'}
+
+
+% 11. Simplification
+
+\newcommand{\I}{{\rm I}}
+\newcommand{\II}{I\hspace*{-0.4mm}I}
+\newcommand{\III}{I\!I\!I}
+\newcommand{\IR}{{I\!\! R}}
+\newcommand{\IV}{I$\!$V}
+\newcommand{\et}{{\it et al}.}
+\newcommand{\Et}{{\it et al}.\,}
+
+\newcommand{\yikH}{y_{ik}^{\rm H}}
+\newcommand{\ybH}{\bar{y}^{\rm H}}
+
+% 12. Sign
+
+\newcommand{\sd}{\stackrel{{\rm d}}{=}}
+\newcommand{\sdt}{$ {\small $\sd$} $}
+\newcommand{\heq}{\;\hat{=}\;}
+\newcommand{\teq}{\triangleq}
+\newcommand{\iid}{\stackrel{{\rm iid}}{\sim}}
+\newcommand{\tiid}{i.i.d.$\hspace*{0.08cm}$}
+\newcommand{\ind}{\stackrel{{\rm ind}}{\sim}}
+\newcommand{\dsim}{\stackrel{.}{\sim}}
+\newcommand{\dis}{\displaystyle}
+\newcommand{\tex}{\textstyle}
+\newcommand{\cf}{cf.$\hspace*{0.1cm}$}
+\newcommand{\trv}{r.v.$\hspace*{0.08cm}$}
+
+\newcommand{\T}{\!\top\!}
+\newcommand{\na}{\nabla}
+\newcommand{\noi}{\noindent}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\pr}{\propto}
+\newcommand{\eq}{\equiv}
+\newcommand{\pa}{\partial}
+\newcommand{\ol}{\overline}
+\newcommand{\non}{\nonumber}
+\newcommand{\ap}{\approx}
+\newcommand{\Bot}{\;\bot\;}
+\newcommand{\inde}{{\Bot\!\!\!\!\!\!\!\Bot}}
+\newcommand{\btu}{\bigtriangleup}
+
+
+% 13. vskip
+
+\newcommand{\vs}{\vspace*{-0.25cm}}
+\newcommand{\vkl}{\vskip 0.10in}
+\newcommand{\vkL}{\vskip 0.15in}
+\newcommand{\vkU}{\vskip 0.30in}
+
+% 14. environment
+
+\newcommand{\namelistlabel}[1]{\mbox{#1}\hfil}
+\newenvironment{namelist}[1]{%
+\begin{list}{}
+       {\let \makelabel \namelistlabel
+        \settowidth{\labelwidth}{#1}
+        \setlength{\leftmargin}{1.1\labelwidth}   }
+        }{%
+\end{list} }
+
+
+% 15. other
+\def\bds{\begin{description} \itemsep=-\parsep \itemindent=-0.7 cm}
+\def\eds{\end{description}}
+\def\i{\item}
+
+% Liu Yin
+%\newcommand{\hphi}{\hat{\phi}}
+\newcommand{\tphi}{\tilde{\phi}}
+\newcommand{\tla}{\tilde{\lambda}}
+\newcommand{\MP}{\mbox{MP}}
+\newcommand{\twocc}[2]{\bigg\{\!\!\begin{array}{c} #1 \\ #2  \end{array} \!\!\bigg\}}
+\newcommand{\bibx}{{\boldsymbol{\bar{x}}}}
+\newcommand{\tbmu}{{\boldsymbol{\tilde{\mu}}}}
+\newcommand{\gD}{\mbox{\rm gD}}
+\newcommand{\HDirichlet}{\mbox{\rm HDirichlet}}
+\newcommand{\hbp}{\bfm {\hat p}}
+
+
+% Lixunjian
+
+\newcommand{\tal}{\tilde{\al}}
+\newcommand{\Bpi}{\bar{\pi}}
+\newcommand{\Bal}{\bar{\al}}
+\newcommand{\Bbe}{\bar{\be}}
+\newcommand{\p}[1]{p_{\rm #1}}
+\newcommand{\s}[1]{s_{\rm #1}}
+\newcommand{\GA}{\mbox{GA}}
+\newcommand{\NR}{\mbox{NR}}
+\newcommand{\zed}{\mbox{zeta}}
+
+\newcommand{\Casesthree}[6]
+{\left\{\!\!\begin{array}{ll} #1 & #2  \\ [2mm]
+                              #3 & #4  \\ [2mm]
+                              #5 & #6
+\end{array} \right. }
+
+\newcommand{\mif}{\mbox{if } \ }
+
+\newcommand{\tha}{\theta}           \newcommand{\Tha}{\Theta}
+\newcommand{\ths}{\theta^*}
+\newcommand{\thtI}{\theta^{(t+1)}}
+
+% Zhao Yuanfan
+
+% Paper 1: GeGa
+
+\newcommand{\mpr}{\mbox{Pr}}  % = \Pr
+\newcommand{\e}{{\rm e}}
+\newcommand{\Kur}{\mbox{Kurt}}
+\newcommand{\GeGa}{\mbox{Ge-Ga}(\al,\mu,\bla)}
+\newcommand{\IGaGa}{\mbox{IGa-Ga}(\al,\mu, \la)}
+\newcommand{\IGauGa}{\mbox{IGau-Ga}(\al, \mu, \la)}
+\newcommand{\RIGauGa}{\mbox{RIGau-Ga}(\al, \mu, \la)}
+\newcommand{\PaGa}{\mbox{Pa-Ga}(\al, \mu, \la)}
+\newcommand{\LN}{\mbox{LN}}
+\newcommand{\bthtt}{\bth^{(t+1)}}   \newcommand{\bthtI}{\bth^{(t+1)}}
+\newcommand{\bbet}{\bbe^{(t)}}
+\newcommand{\bbett}{\bbe^{(t+1)}}   \newcommand{\bbetI}{\bbe^{(t+1)}}
+\newcommand{\mut}{\mu^{(t)}}
+\newcommand{\mutt}{\mu^{(t+1)}}     \newcommand{\mutI}{\mu^{(t+1)}}
+\newcommand{\GIG}{\mbox{GIG}}
+\newcommand{\GIGau}{\mbox{GIGau}}
+\newcommand{\IGa}{\mbox{IGa}}
+\newcommand{\RIG}{\mbox{RIG}}
+\newcommand{\RIGau}{\mbox{RIGau}}
+\newcommand{\Weibull}{\mbox{Weibull}}
+\newcommand{\Se}{\mbox{Se}}
+\newcommand{\constant}{\mbox{constant}}
+
+% Paper 2: MVGA
+\newcommand{\GeGad}{\mbox{Ge-Ga}_d(\al,\bmu,\bla)}
+\newcommand{\IGaGad}{\mbox{IGa-Ga}_d(\al,\bmu, \la)}
+\newcommand{\LSGIGauGa}{\mbox{LSGIGau-Ga}_d(\al, \bmu, \la)}
+\newcommand{\LNGa}{\mbox{LN-Ga}_d(\al,\bmu,\la)}
+\newcommand{\tsf}[1]{\textsf{#1}}
+
+% Paper 3: NP-Ga
+\newcommand{\NPGa}{\mbox{NP-Ga}_d(\al, \bmu, \ibp)}
+\newcommand{\ibg}{\boldsymbol{g}}   \newcommand{\ibgt}[1]{\ibg_{#1}^{(t)}}
+\newcommand{\ptI}[1]{p^{(t+1)}_{#1}}
+\newcommand{\bvth}{\boldsymbol{\vth}}
+\newcommand{\mcL}{\mathcal{L}}
+
+% Paper 4: NPMN
+
+\newcommand{\GeN}{\mbox{Ge-N}_d(\bmu, \bSi, \bla)}
+\newcommand{\Kurt}{\mbox{Kurt}}
+\newcommand{\At}[1]{\bA_{#1}^{(t)}}
+\newcommand{\bmut}{\bmu^{(t)}}
+\newcommand{\bmutI}{\bmu^{(t+1)}}
+\newcommand{\bSit}{\bSi^{(t)}}  \newcommand{\bSitI}{\bSi^{(t+1)}}
+\newcommand{\bBtI}{\bB^{(t+1)}}
+\newcommand{\bgatI}{\bga^{(t+1)}}
+\newcommand{\btau}{\boldsymbol{\tau}}
+
+\newcommand{\GaN}{\mbox{Ga-N}_d(\bmu, \bSi, \la)}
+\newcommand{\IGaN}{\mbox{IGa-N}_d(\bmu, \bSi, \la)}
+\newcommand{\IGauN}{\mbox{IGau-N}_d(\bmu, \bSi, \la)}
+\newcommand{\RIGauN}{\mbox{RIGau-N}_d(\bmu, \bSi, \la)}
+
+\newcommand{\NPMN}{\mbox{NPM-N}_d(\bmu, \bSi, \ibp)}
+\newcommand{\bvptI}{\bvp^{(t+1)}}
+\newcommand{\Loglikelihood}{\textsf{Log-likelihood}}
+\newcommand{\Rank}{\textsf{Rank}}
+\newcommand{\MAE}{\textsf{MAE}}
+
+% Paper 5: BSB
+
+\newcommand{\Bernstein}{\mbox{Bernstein}}
+\newcommand{\BetaBino}{\mbox{Beta-Bino}}
+\newcommand{\BernBino}{\mbox{Bern-Bino}}
+\newcommand{\blat}{\bla^{(t)}}
+\newcommand{\blatI}{\bla^{(t+1)}}
+\newcommand{\ibV}{\boldsymbol{V}}
+\newcommand{\ibbt}[1]{\ibb^{(t)}_{#1}}
+\newcommand{\bBt}{\bB^{(t)}}
+\newcommand{\hblas}{\hbla^*}
+\newcommand{\cL}{{\cal L}}
+\newcommand{\tbla}{\boldsymbol{\tla}}
+\newcommand{\Bla}{\bar{\la}}

@@ -1,0 +1,73 @@
+\section{$\!\!\!\!\!\!\!$. Bayesian inferences} % Section 3
+
+Let $\{X_i\}_{i=1}^n \iid \BernBino(m, K, \bla)$ and the observed data $\Y{obs} = \{x_i\}_{i=1}^n$. We perform Bayesian inferences on parameters $\bla = (\la_0, \la_1, \dots, \la_K)^{\T} \in \bbT_{K+1}$; i.e., we will calculate the posterior mode via an MM algorithm and generate posterior samples via a DA algorithm. Finally, the posterior mean and Bayesian credible interval can be obtained based on posterior samples.
+
+Consider the prior $\bla \sim \Dirichlet_{K+1}(\bal)$ with joint pdf
+\begin{eqnarray}    \label{eqn2.4}
+   \Dirichlet_{K+1}(\bla| \bal) = \frac{\Ga(\sum_{k=0}^K \al_k)} {\prod_{k=0}^K \Ga(\al_k)} \prod_{k=0}^K \la_k^{\al_k-1}, \quad \bla \in \bbT_{K+1},
+\end{eqnarray}
+where $\bal = (\al_0,\al_1,\ldots,\al_K)^{\T}$ is a known vector. Then, we obtain the posterior distribution
+\begin{eqnarray}    \label{eqn2.5}
+   p(\bla|\Y{obs}) \pr \cL(\bla|\Y{obs}) \cdot \Dirichlet_{K+1}(\bla| \bal),
+\end{eqnarray}
+where $\cL(\bla|\Y{obs})$ is the likelihood function of $\bla$. Find the mode of posterior distribution is equivalent to optimizing  $\log p(\bla|\Y{obs})$ to obtain the optimized value $\tbla$.
+
+
+\subsection{The MM algorithm to calculate the posterior mode of $\bla$}      % Section 3.1
+
+From (\ref{eqn2.5}) with the prior (\ref{eqn2.4}), we easily obtain
+\begin{eqnarray*}
+   \log p(\bla|\Y{obs}) = \constant + \sum_{i=1}^n \log \left(\sum_{k=0}^K a_{ik}\la_k \right) + \sum_{k=0}^K (\al_k-1)\log (\la_k).
+\end{eqnarray*}
+Similar to \S2.2, we employ Jensen's inequality again to construct the surrogate function
+$$
+   Q(\bla|\blat) = \constant + \sum_{k=0}^K \left(\sum_{i=1}^n \bt{ik} + \al_k-1 \right) \log (\la_k),
+$$
+where $\bt{ik}$ is defined by (\ref{zyffour2.7}). Similar to (\ref{zyffour2.8}), we obtain the MM iterations as
+\begin{eqnarray*}
+   \latI_k = \frac{\sum_{i=1}^n \bt{ik}+\al_k-1}{\sum_{l=0}^K (\sum_{i=1}^n \bt{il}+\al_l-1)}, \quad k = 0, 1, \dots, K.
+\end{eqnarray*}
+
+
+
+\subsection{The DA algorithm to generate posterior samples}     % Section 3.2
+
+From (\ref{zyffour2.3}), we know that $\ibZ =(Z_0, Z_1, \dots, Z_K)^{\T} \sim \Multinomial(1,\bla)$ is equivalent to a finite discrete \trv $W$ defined on $\bbN_{0:K}$ with corresponding probabilities $\bla$, where $W = k$ means $Z_k  = 1$ is sampled from the $k$-th category. Therefore, we introduce the missing data $\Y{mis} = \{w_i\}_{i=1}^n$, where the latent variable $W_i \iid \FDiscrete(\bbN_{0:K}, \bla)$ with $p(W_i=k) = \la_k$ for $k=0,1,\ldots,K$. Therefore, the complete data can be expressed as $\Y{com} = \{\Y{obs},\Y{mis}\}$.
+
+In order to make a full Bayesian inference on the parameter vector $\bla$, we could employ the DA algorithm of Tanner \& Wong (1987), where the \textsf{I-step} is to generate the missing data $\{W_i=w_i\}_{i=1}^n$ from the conditional predictive distribution
+\begin{eqnarray*}
+    p(W_i = k | x_i, \bla) &\pr & p(x_i | W_i = k, \bla) \cdot p(W_i = k | \bla) \\ [2mm]
+    &=& \la_k \cdot \binom{m}{x_i} \frac{B(x_i + k + 1, m - x_i + K - k + 1)}{B(k + 1, K - k + 1)} \\ [2mm]
+    &=& \la_k \cdot \BetaBino(x_i | m, k + 1, K - k + 1) \teq q_{ik};
+\end{eqnarray*}
+i.e., $W_i | (x_i, \bla) \sim \FDiscrete(\bbN_{0:K}, \ibp_i)$, where
+$\ibp_i \teq (p_{i0}, p_{i1}, \dots, p_{iK})^{\T}$ with $p_{ik} \pr q_{ik}$. The \textsf{P-step} is draw $\bla$ from the complete--data posterior distribution
+\begin{eqnarray}
+    p(\bla | \Y{com}) = p(\bla | \ibW) = \pi(\bla | \bal) \cdot p(\ibW | \bla) \pr \prod_{k=0}^K \la_k^{\al_k + N_k - 1} \sim \Dirichlet_{K+1}(\bal + \ibN), \nonumber
+\end{eqnarray}
+where $\ibW = (W_1, \ldots, W_n)^\top$ and $\ibN = (N_0, N_1, \ldots,N_K)^{\T}$ with $N_k = \sum_{i=1}^n I(W_i = k)$. Thus, we summarize the DA algorithm for calculating the posterior mean and Bayesian CIs of $\la_k$s as follows:
+
+\vkL
+\IncMargin{0.1em}  % 使得行号不向外突出
+\begin{algorithm}[H]  \label{alg1}
+    \SetAlgoNoLine % 不要算法中的竖线
+    \SetKwInOut{Input}{\textsf{Input}}\SetKwInOut{Output}{\textsf{Output}} % 替换关键词
+
+    \Input{The initial parameter vector $\bla^{(0)}$, latent variable $\ibW^{(0)}$, the observed data $\Y{obs}=\{x_i\}_{i=1}^n$ and the sampling number $G$.}
+    \Output{Posterior mean $\Bla_k$ and Bayesian CI $[\la_k^{\rm L},\;\la_k^{\rm U}]$ for $k=0,1,\ldots,K$.}
+    \BlankLine
+
+    Set initial vectors $\bla^{(0)}$ and $\ibW^{(0)}$; \\
+    \For{ \(g=0\) {\rm \bf to} \(G\)} {
+        \textsf{I-step}: Draw latent variables $\ibW^{(g+1)}$ from $W_i|\bla^{(g)} \sim \FDiscrete(\bbN_{0:K}, \ibp_i^{(g)})$, $i=1, \dots, n$, where $\ibp_i^{(g)} = (p_{i0}^{(g)}, p_{i1}^{(g)}, \dots, p_{iK}^{(g)})^{\T}$  with $p_{ik}^{(g)} \pr q_{ik}^{(g)}$.
+
+        \textsf{P-step}: Draw parameter vector $\bla^{(g+1)}$ from $\bla|\ibW^{(g+1)} \sim \Dirichlet_{K+1}(\bal+ \ibN^{(g+1)})$, where $\ibN^{(g)} = (N_0^{(g)}, N_1^{(g)}, \ldots, N_K^{(g)})^{\T}$ with $N_k^{(g)} = \sum_{i=1}^n I(W_i^{(g)} = k)$.
+    }
+    \textbf{Collection of posterior samples:} Abandon the results of the previous $B$ iterations and save the remaining samples $\{\bla^{(g)}\}_{g=B+1}^G$.
+
+    \textbf{Compute the posterior mean:} $\Bla_k \teq [1/(G-B)]\sum_{g=B+1}^G \la_k^{(g)}$, $k=0, 1, \dots, K$.
+
+    \textbf{Compute the Bayesian CI:} $[\la_k^{\rm L},\; \la_k^{\rm U}] = [\la_k^{(\al/2)},\;\la_k^{(1-\al/2)}]$, $k=0, 1, \dots, K$, where $\la_k^{(q)}$ is the $q$-quantile of the posterior sample.
+    \caption{\ Posterior mean and Bayesian CI via the DA algorithm}
+\end{algorithm}
+\DecMargin{0.1em}

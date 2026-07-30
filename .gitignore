@@ -1,0 +1,14 @@
+# Latex data
+# Thesis/*
+# !Thesis/MGeN.pdf
+# !Thesis/Supplementary_Materials.pdf
+
+# Latex编译产物
+*.aux
+*.bbl
+*.bcf
+*.run.xml
+*.synctex
+*.thm
+*.log
+*.blg

@@ -1,0 +1,171 @@
+\usepackage{array}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{ntheorem}
+\usepackage{epsf}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{subfigure}
+\usepackage{arydshln}
+\usepackage{makecell}
+\usepackage{mathrsfs}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{threeparttable}
+\usepackage{url}
+\usepackage{makecell}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{diagbox}
+\lstset{numbers=left, %设置行号位置
+        numberstyle=\tiny, %设置行号大小
+        keywordstyle=\color{blue}, %设置关键字颜色
+        commentstyle=\color[cmyk]{1,0,1,0}, %设置注释颜色
+        frame=single, %设置边框格式
+        escapeinside=``, %逃逸字符(1左面的键)，用于显示中文
+        %breaklines, %自动折行
+        extendedchars=false, %解决代码跨页时，章节标题，页眉等汉字不显示的问题
+        xleftmargin=2em,xrightmargin=2em, aboveskip=1em, %设置边距
+        tabsize=4, %设置tab空格数
+        showspaces=false %不显示空格
+        title=false
+}
+
+\usepackage[bookmarks=false]{hyperref}
+\hypersetup{hidelinks,
+	colorlinks=true,
+	allcolors=blue,
+	pdfstartview=Fit,
+	breaklinks=true}
+
+
+\usepackage[ruled, linesnumbered]{algorithm2e}
+\def\bfm#1{\mbox{\boldmath$#1$}}
+\setlength{\arraycolsep}{2pt}
+% \def\T{{ \mathrm{\scriptscriptstyle T} }}
+\textwidth 165mm
+\textheight 220mm
+\numberwithin{equation}{section}
+
+% 定义参考文献的格式
+\usepackage[style=authoryear, giveninits=true, uniquename=init, backend=biber, maxbibnames=99, minbibnames=3, maxcitenames=2]{biblatex}
+
+% ==========================================
+% --- 针对期刊 (Article) 的智能定制 ---
+% ==========================================
+% 1. 姓名格式调整：去掉名字缩写后面的句号 (H. -> H)
+\renewcommand*{\bibinitperiod}{}
+
+% 2. 姓名格式调整：去掉姓和名之间的逗号 (Akaike, H -> Akaike H)
+\renewcommand*{\revsdnamepunct}{}
+
+% 3. 卷号调整：强制将期刊的卷号 (Volume) 设置为加粗
+\DeclareFieldFormat[article]{volume}{\textbf{#1}}
+
+% 4. 标题调整：去掉文章标题两边的默认双引号
+\DeclareFieldFormat[article,inbook,incollection,inproceedings]{title}{#1}
+
+% 5. 期刊前缀调整：去掉默认的 "In: " 字样
+\renewbibmacro{in:}{%
+  \ifboolexpr{test {\ifentrytype{incollection}} or test {\ifentrytype{inproceedings}}}
+    {\printtext{In\space}}
+    {}%
+}
+\DeclareFieldFormat[article]{number}{\mkbibparens{#1}}
+
+% 3. 彻底重写“卷号+期号”的拼接逻辑：去掉它们中间的点，让它们紧紧贴在一起
+\renewbibmacro*{volume+number+eid}{%
+  \printfield{volume}%
+  \printfield{number}% 这里直接跟着期号，不加任何点或空格
+  \setunit{\addcomma\space}%
+  \printfield{eid}}
+\DeclareFieldFormat[article]{pages}{#1}
+\DeclareNameAlias{sortname}{family-given}
+\renewcommand*{\bibinitdelim}{}
+\renewcommand*{\finalnamedelim}{\addspace\&\space}
+\renewbibmacro*{name:andothers}{\ifboolexpr{test {\ifnumequal{\value{listcount}}{\value{liststop}}} and test \ifmorenames}{\ifnumgreater{\value{liststop}}{1}{\finalandcomma}{}\printdelim{andothersdelim}\textit{et al.}}{}}
+\DeclareFieldFormat{doi}{https://doi.org/#1}
+\DeclareFieldFormat{doi}{\url{https://doi.org/#1}}
+
+\renewbibmacro*{addendum+pubstate}{%
+  \printfield{addendum}%
+  \iffieldundef{pubstate}
+    {}
+    {\setunit{\addcomma\space}% 强制将前面的标点改为逗号
+     \printfield{pubstate}}%
+}
+
+% ==========================================
+% --- 针对书籍 (Book) 的智能定制 ---
+% ==========================================
+
+% 1. 仅针对 book 释放卷号和版本号的默认格式
+\DeclareFieldFormat[book]{volume}{#1}
+\DeclareFieldFormat[book]{edition}{#1}
+
+% 2. 带有“类型隔离”的安全书名宏
+\renewbibmacro*{title}{%
+  \ifboolexpr{test {\iffieldundef{title}} and test {\iffieldundef{subtitle}}}
+    {}
+    {\printtext[title]{%
+       \printfield[titlecase]{title}%
+       \setunit{\subtitlepunct}%
+       \printfield[titlecase]{subtitle}}%
+     % --- 核心修正开始：增加类型判断 ---
+     \ifentrytype{book}
+       {\setunit{\addspace}% 【如果是书籍】加空格，准备拼接括号
+        \ifboolexpr{test {\iffieldundef{volume}} and test {\iffieldundef{edition}}}
+          {} 
+          {\printtext[parens]{% 加上小括号
+             \iffieldundef{volume}{}{Vol.\addspace\printfield{volume}}%
+             \ifboolexpr{not test {\iffieldundef{volume}} and not test {\iffieldundef{edition}}}
+               {\addcomma\space}{}%
+             \iffieldundef{edition}{}{\printfield{edition}\addspace Edition}%
+           }}%
+        \clearfield{volume}% 仅清除书籍的卷号，绝不碰期刊的卷号！
+        \clearfield{edition}% 
+       }
+       {}% 【如果不是书籍】（如期刊Article），什么都不做，安全退出
+     % --- 核心修正结束 ---
+     \newunit}%
+}
+
+% 3. 彻底重写出版社和出版地的排列逻辑 (Publisher, Location)
+\renewbibmacro*{publisher+location+date}{%
+  \printlist{publisher}% 先打印出版社
+  \setunit*{\addcomma\space}% 插入“逗号+空格”
+  \printlist{location}% 再打印出版地
+  \newunit}
+
+% ==========================================
+% --- 针对书籍章节 (Incollection) 的定制 ---
+% ==========================================
+
+% 1. 去掉页码前面的 "pp."
+\DeclareFieldFormat[incollection]{pages}{#1}
+
+% 2. 将页码强行拼接到所在书名 (booktitle) 后面，并用逗号隔开
+\renewbibmacro*{booktitle}{%
+  \ifboolexpr{test {\iffieldundef{booktitle}} and test {\iffieldundef{booksubtitle}}}
+    {}
+    {\printtext[booktitle]{%
+       \printfield[titlecase]{booktitle}%
+       \setunit{\subtitlepunct}%
+       \printfield[titlecase]{booksubtitle}}%
+     \iffieldundef{pages}
+       {}
+       {\setunit{\addcomma\space}% 插入逗号和空格
+        \printfield{pages}% 打印页码
+        \clearfield{pages}}% 关键：打印完立刻销毁，防止结尾重复打印
+    }%
+}
+
+% ==========================================
+% --- 针对预印本 (Preprint) 的智能定制 ---
+% ==========================================
+\DeclareFieldFormat[unpublished,inbook,incollection,inproceedings, misc]{title}{#1}
+% 6. 姓名格式调整：去掉带连字符名字缩写时的连字符 (Guo-Liang -> GL)
+\renewcommand*{\bibinithyphendelim}{}
