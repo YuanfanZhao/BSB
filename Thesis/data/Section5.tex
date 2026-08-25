@@ -2,136 +2,116 @@
 
 \section{$\!\!\!\!\!\!\!$. Real data analysis}    % Section 5
 
-\subsection{Data description and overdispersion check}   % Section 5.1
+In this section, we evaluate the practical performance of the proposed \BernBino\ distribution on two real datasets of binomial counts with a fixed number of trials $m$: the Women's Mobility data from the Bangladesh Fertility Survey of 1989 and the mathematics test data of de Ayala (2009). Both datasets are over--dispersed and exhibit distributional features (e.g., a secondary mode or a wide, non--Beta shape) that the standard binomial mixture models can hardly capture. For each dataset, we fit the five distributions considered in \S4.2, namely the $\Binomial(m,p)$, the $\BetaBino(m,\al,\be)$, the logit--normal binomial (Logit-N), the Kumaraswamy binomial (KM) and the proposed $\BernBino(m,K,\bla)$, by maximum likelihood (the MM algorithm for \BernBino, and numerical integration with `optim' for the parametric mixtures). The degree $K$ of \BernBino\ is selected over $K = 1, \ldots, 30$ by the BIC. In addition to the in--sample criteria (log--likelihood, AIC, BIC, the L1 distance and the MSE between the fitted and empirical pmfs, and the parametric bootstrap $p$--value of the Pearson statistic with $B=999$ replications), we carry out a five--fold cross--validation repeated three times as an out--of--sample check: on each training fold all models are refitted (with $K$ reselected on that fold by the BIC) and the held--out test log--likelihood (CV logLik) and test L1/MSE are computed. This prevents the flexible \BernBino\ model from being favoured merely by overfitting.
 
-To examine the practical performance of the proposed \BernBino\ distribution, we apply it to a classic real dataset with pronounced over--dispersion: the low--iron rat teratology data (Shepard \emph{et al.}, 1980; Moore \& Tsiatis, 1991). The data originate from a laboratory study of the effects of dietary regimens on fetal development in rats. A total of $n = 58$ pregnant rats were fed iron--deficient diets and were divided into four groups: group 1 received only placebo injections (untreated low--iron group), while groups 2--4 received iron supplements according to different injection schedules (injections on day 7 or day 10 only, on days 0 and 7, or weekly). For each litter, the number of dead fetuses $R_i$ and the litter size $N_i$ (the total number of fetuses) were recorded, together with the dam's hemoglobin level $hb_i$ and the group indicator $grp_i \in \{1,2,3,4\}$.
+\subsection{Women's mobility data}    % Section 5.1
 
-Since each fetus constitutes a Bernoulli trial (dead or alive), the litter--wise count $R_i$ naturally follows a binomial model $\Binomial(N_i, p_i)$ with a litter--specific death probability $p_i$; heterogeneity across litters makes the observed variation larger than that of a binomial model, i.e., the data exhibit extra--binomial variation. Table \ref{tab5.1} summarizes the data by group, and Figure \ref{fig5.1} displays the per--litter death proportions. We can see that the untreated low--iron group (group 1) has a much higher average death proportion ($0.758$) than the iron--supplemented groups ($0.035$--$0.102$), indicating a strong treatment effect at the group level, and that the death proportion varies considerably even within each group.
+\emph{Data.} The Women's Mobility data (Huq \& Cleland, 1990; Bartholomew \emph{et al.}, 2002) consist of a rural subsample of $n = 8445$ women from the Bangladesh Fertility Survey of 1989. Each woman was asked whether she could, alone, carry out eight activities: going to any part of the village/town/city, going outside the village/town/city, talking to an unknown man, going to a cinema/cultural show, going shopping, going to a cooperative/mothers' club/other club, attending a political meeting and going to a health centre/hospital. Let $X_i \in \{0,1,\ldots,8\}$ be the number of activities that woman $i$ is permitted to perform; treating the eight items as Bernoulli trials, $X_i \sim \Binomial(8, p_i)$ with a woman--specific mobility level $p_i$. The observed score distribution is strongly over--dispersed and non--unimodal: the counts of $X = 0,\ldots,8$ are $829, 1617, 2369, 1533, 1126, 389, 193, 143, 246$, with a mode at $X=2$ and a clear secondary mode at $X=8$ (246 women, $2.9\%$, who are permitted all eight activities). Such a structure cannot be represented by any unimodal prior on $p$.
 
-To quantify the over--dispersion, we first fit a simple $\Binomial(N_i, p)$ model with the pooled MLE $\hp = \sum_i R_i / \sum_i N_i = 267/607 = 0.4399$. Under the binomial assumption, the dispersion statistic
-\begin{eqnarray}
-   \hphi \teq \frac{1}{n-1} \sum_{i=1}^{n} \frac{(R_i - N_i \hp)^2}{N_i \hp(1-\hp)}
-\end{eqnarray}
-is approximately $\chi^2_{n-1}$ distributed when there is no extra--binomial variation. For the teratology data, we obtain $\hphi = 6.929$ with the corresponding $p$-value $4.7 \times 10^{-52}$, which strongly rejects the binomial assumption and confirms the existence of severe over--dispersion. This motivates the use of binomial mixture models such as the beta--binomial and the proposed \BernBino\ distribution.
+\emph{Results.} Table \ref{tab5.mob} reports the in--sample comparison. The \BernBino\ model with the BIC--selected degree $K=15$ attains the largest log--likelihood ($-15929.01$, about $435$ units higher than the best parametric model), the smallest AIC and BIC (lower by about $842$ and $743$ respectively), the smallest L1 distance and MSE, and a bootstrap $p$--value of $1.000$, whereas the binomial, beta--binomial and logit--normal models are all rejected at the $5\%$ level. The BIC curve in Figure \ref{fig5.bic} is minimized at $K=15$ (not at the boundary of the grid), and the log--likelihood of \BernBino\ already exceeds all parametric competitors from $K=5$ onwards. Figure \ref{fig5.mob} compares the fitted score distributions and the residuals: the parametric models systematically underestimate the mass at $X=8$, while the \BernBino\ fit is nearly indistinguishable from the observed frequencies. Table \ref{tab5.mob.cv} shows that the out--of--sample result is even clearer: the CV log--likelihood of \BernBino\ ($-47795.48$) is about $1306$ units higher than that of the best parametric model, and its CV L1 and MSE are roughly halved, with $K=15$ selected by the BIC in all $15$ training folds. Hence the advantage of the proposed model is genuine and not an artefact of overfitting.
 
-\begin{Table} \label{tab5.1} {\rm \hspace{-0.2cm}{\bf .}
-Group--wise summary statistics of the low--iron rat teratology data.
-\vspace{-0.1cm}
-\begin{center}
-\renewcommand{\arraystretch}{1.15} \tabcolsep 0.09in \small
-\begin{tabular}{|c|c|r|r|r|r|r|}  \hline\hline
-    Group & \# litters & Mean $N$ & $\sum N_i$ & $\sum R_i$ & Death prop. & Mean $hb$ \\ \hline
-    1 (untreated) & 31 & 10.55 & 327 & 248 & 0.758 & 4.59  \\
-    2 (day 7 or 10) & 12 & 9.83 & 118 & 12 & 0.102 & 9.01  \\
-    3 (days 0 and 7) & 5 & 11.60 & 58 & 2 & 0.034 & 10.92 \\
-    4 (weekly) & 10 & 10.40 & 104 & 5 & 0.048 & 14.74 \\ \hline
-    Overall & 58 & 10.47 & 607 & 267 & 0.440 & 8.55  \\ \hline\hline
-\end{tabular}
-\end{center} }
-\end{Table}
-
-\begin{figure}[H]
-    \centering
-    \subfigure[$\;$ Per-litter death proportion by group]
-    {
-        \centering
-        \includegraphics[width=0.49\linewidth]{figures/plot16.png}
-    }
-    \caption{$\;$ (a) Boxplot and jittered points of the per--litter death proportions by group; (b) histogram of the death proportions with the pooled mean indicated by the dashed line.}
-\label{fig5.1}
-\end{figure}
-
-\subsection{Model fitting and comparison}    % Section 5.2
-
-We fit the five distributions studied in the simulation studies of \S4.2 to the pooled $58$ litters: the $\Binomial(N_i, p)$, the $\BetaBino(N_i, \al, \be)$, the logit--normal binomial (Logit-N), the Kumaraswamy binomial (KM) and the proposed $\BernBino(N_i, K, \bla)$. Since the litter sizes are not identical, we extend the model in (\ref{eqn2.1})--(\ref{eqn2.2}) to unit--specific trial numbers $m_i \teq N_i$; this is a natural extension because in the pmf (\ref{eqn2.2}) and the coefficient $a_{ik}$ in (\ref{zyffour2.5}) the common $m$ is simply replaced by $N_i$, while the MM iterations (\ref{zyffour2.8}) and the DA algorithm (Algorithm \ref{alg1}) remain unchanged. The parameters of the four parametric mixture models are estimated by maximizing their log--likelihoods with the same numerical integration procedure as in \S4.2, and the weights $\bla$ of the \BernBino\ model are estimated by the MM algorithm.
-
-The degree $K$ of the \BernBino\ model is selected over the grid $K = 1, \ldots, 15$ by minimizing the BIC (with the AIC as a secondary criterion); the BIC curve in Figure \ref{fig5.3} attains its minimum at $K = 4$, while the AIC selects $K = 5$. Table \ref{tab5.2} compares the five models in terms of the number of parameters, the log--likelihood, the AIC, the BIC, the Pearson goodness--of--fit statistic
+The estimated Bernstein prior of the mobility level,
 \begin{eqnarray*}
-   X^2 \teq \sum_{i=1}^{n} \frac{\big(R_i - N_i \mu_1\big)^2}{N_i \mu_1 - N_i \mu_2 + N_i(N_i-1)(\mu_2 - \mu_1^2)},
+   \pi(p) \;\approx\; 0.92\,\mBeta(p|5,11) + 0.03\,\mBeta(p|4,12) + 0.04\,\mBeta(p|16,1),
 \end{eqnarray*}
-where $\mu_j \teq \bbE(p^j)$, $j=1,2$, is evaluated under the fitted mixing distribution of $p$ (the denominator is exactly $\Var(X_i)$ for a binomial mixture model), the parametric bootstrap $p$--value of the Pearson statistic (based on $B = 999$ simulated datasets), the distributional MAE defined in \S4.2, and the ranks of the models by the AIC and the $p$--value.
+concentrates about $92\%$ of the mass on a restricted subpopulation (mode around $0.27$) and the remaining mass on a fully unrestricted subpopulation with $p$ close to $1$, which directly reflects the secondary mode at $X=8$ and is impossible for the beta, logit--normal and Kumaraswamy priors. In summary, on the Women's Mobility data the \BernBino\ model is best both in--sample and out--of--sample and provides a flexible, interpretable estimate of the prior density of $p$.
 
-From Table \ref{tab5.2} and Figure \ref{fig5.2}, we can draw the following conclusions. First, the binomial model is severely inadequate: its log--likelihood ($-290.451$) is much smaller than those of the other four models, its Pearson statistic ($394.942$) is extremely large, and the bootstrap $p$--value is almost zero. Second, the four mixture models all fit the data much better and are quite close to each other: the range of their log--likelihoods is only about $1.3$ units, and the beta--binomial achieves the smallest AIC and BIC because of its parsimony. Third, the proposed \BernBino\ model with the BIC--selected $K=4$ is competitive with the established models: its log--likelihood ($-124.593$) is within $1.3$ units of the best value, and its bootstrap $p$--value ($0.053$) indicates that the model is not rejected at the $5\%$ significance level. Moreover, its log--likelihood keeps increasing with $K$ (e.g., $-123.507$ for $K=5$, $-123.140$ for $K=6$, and $-122.367$ for $K=15$, which is higher than that of any parametric competitor), and the Pearson $p$--value increases to $0.218$ and $0.382$ for $K=5$ and $K=6$, respectively. This is consistent with the Bernstein approximation property in Theorem \ref{thm1}: as $K$ increases, the Bernstein prior can approximate any continuous prior density on $[0,1]$ more and more accurately, at the price of additional parameters.
-
-\begin{Table} \label{tab5.2} {\rm \hspace{-0.2cm}{\bf .}
-Comparison of the five fitted distributions for the rat teratology data ($n=58$).
+\begin{Table} \label{tab5.mob} {\rm \hspace{-0.2cm}{\bf .}
+In--sample comparison of the five fitted distributions for the Women's Mobility data ($n=8445$, $m=8$).
 \vspace{-0.1cm}
 \begin{center}
-\renewcommand{\arraystretch}{1.1} \tabcolsep 0.05in \scriptsize
-\begin{tabular}{|l|c|r|r|r|r|r|r|r|r|}  \hline\hline
-    Model & \#par & \textsf{logLik} & \textsf{AIC} & \textsf{BIC} & $X^2$ & $p$-value & \textsf{MAE} & $\textsf{Rank}_A$ & $\textsf{Rank}_p$ \\ \hline
-    $\Binomial(N_i,p)$ & 1 & $-290.451$ & $582.903$ & $584.963$ & $394.942$ & $0.001$ & $0.1273$ & 5 & 5 \\
-    $\BetaBino(N_i,\al,\be)$ & 2 & $-123.326$ & $250.652$ & $254.773$ & $67.568$ & $0.419$ & $0.0775$ & 1 & 1 \\
-    Logit-N$(N_i)$ & 2 & $-123.755$ & $251.510$ & $255.630$ & $72.957$ & $0.108$ & $0.0780$ & 2 & 3 \\
-    KM$(N_i)$ & 2 & $-123.756$ & $251.511$ & $255.632$ & $68.535$ & $0.333$ & $0.0781$ & 3 & 2 \\
-    $\BernBino(N_i,4,\bla)$ & 5 & $-124.593$ & $259.185$ & $269.487$ & $74.862$ & $0.053$ & $0.0782$ & 4 & 4 \\ \hline\hline
+\renewcommand{\arraystretch}{1.1} \tabcolsep 0.07in \scriptsize
+\begin{tabular}{|l|c|r|r|r|r|r|r|r|}  \hline\hline
+    Model & \#par & \textsf{logLik} & \textsf{AIC} & \textsf{BIC} & L1 & MSE & $p$-value & $\textsf{Rank}_{L}$ \\ \hline
+    $\Binomial(8,p)$ & 1 & $-17566.34$ & $35134.67$ & $35141.71$ & 0.1228 & 0.001328 & 0.001 & 5 \\
+    $\BetaBino(8,\al,\be)$ & 2 & $-16409.09$ & $32822.17$ & $32836.26$ & 0.0955 & 0.000921 & 0.001 & 4 \\
+    Logit-N$(8)$ & 2 & $-16363.82$ & $32731.65$ & $32745.73$ & 0.0941 & 0.000858 & 0.001 & 3 \\
+    KM$(8)$ & 2 & $-16450.44$ & $32904.87$ & $32918.95$ & 0.1005 & 0.001056 & 0.120 & 2 \\
+    $\BernBino(8,15,\bla)$ & 16 & $-15929.01$ & $31890.02$ & $32002.68$ & 0.0512 & 0.000266 & 1.000 & 1 \\ \hline\hline
+\end{tabular}
+\end{center} }
+\end{Table}
+
+\begin{Table} \label{tab5.mob.cv} {\rm \hspace{-0.2cm}{\bf .}
+Out--of--sample comparison (5--fold cross--validation repeated 3 times) for the Women's Mobility data.
+\vspace{-0.1cm}
+\begin{center}
+\renewcommand{\arraystretch}{1.1} \tabcolsep 0.12in \small
+\begin{tabular}{|l|r|r|r|}  \hline\hline
+    Model & CV logLik & CV L1 & CV MSE \\ \hline
+    $\Binomial(8,p)$ & $-52704.25$ & 0.1246 & 0.001370 \\
+    $\BetaBino(8,\al,\be)$ & $-49237.36$ & 0.1022 & 0.000966 \\
+    Logit-N$(8)$ & $-49101.33$ & 0.1007 & 0.000904 \\
+    KM$(8)$ & $-49361.93$ & 0.1094 & 0.001102 \\
+    $\BernBino(8,15,\bla)$ & $-47795.48$ & 0.0564 & 0.000311 \\ \hline\hline
 \end{tabular}
 \end{center} }
 \end{Table}
 
 \begin{figure}[H]
     \centering
-    \subfigure[$\;$ Fitted pmf at the modal litter size $N=10$]
-    {
-        \centering
-        \includegraphics[width=0.49\linewidth]{figures/plot17.png}
-    }
-    \caption{$\;$ (a) Observed relative frequencies and fitted pmfs of the five models at the modal litter size $N=10$; (b) Pearson residuals of the \BernBino\ model against the litter size.}
-\label{fig5.2}
+    \includegraphics[width=0.85\linewidth]{figures/plot16.png}
+    \caption{$\;$ Women's Mobility data: (upper) observed score distribution and fitted pmfs of the five models; (lower) corresponding residuals.}
+\label{fig5.mob}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\linewidth]{figures/plot18.png}
-    \caption{$\;$ BIC and AIC curves for selecting the degree $K$ of the \BernBino\ model; the red points mark the minima.}
-\label{fig5.3}
-\end{figure}
+\subsection{Mathematics test data}    % Section 5.2
 
-\subsection{Bayesian inference via the DA algorithm}    % Section 5.3
+\emph{Data.} The second dataset is the five--item mathematics test data given by de Ayala (2009, p. 14), which is widely used as a benchmark in item response theory. It is provided as a response--pattern frequency table with a total of $n = 19601$ examinees; each examinee answers $m=5$ binary items, so that the score $X_i \in \{0,1,\ldots,5\}$ is the number of correct answers and $X_i \sim \Binomial(5, p_i)$ with an examinee--specific ability $p_i$. The score distribution is wide and nearly symmetric: the counts of $X = 0,\ldots,5$ are $691, 3099, 4269, 4116, 4041, 3385$. Although the beta--binomial fit is acceptable in--sample, its shape constraints (unimodal beta prior) leave systematic discrepancies that a flexible prior can eliminate.
 
-We next perform a full Bayesian analysis of the \BernBino\ model with the BIC--selected degree $K=4$ using the DA algorithm in \S3.2. Following the non--informative prior $\bal = \1_{K+1}$ (Prior $\mbox{P}_1$ in \S4.3), we run $M=4$ independent chains, each with $G = 10{,}000$ iterations and a burn--in period of $B = 2{,}500$, and combine the retained samples to obtain a posterior sample of size $30{,}000$. Table \ref{tab5.3} reports the posterior mean, the posterior standard deviation, the $95\%$ Bayesian credible interval (BCI), the effective sample size (ESS) and the Gelman--Rubin convergence statistic $\hat{R}$ for each weight $\la_k$. All $\hat{R}$ values are no larger than $1.0001$ and all ESS values exceed $10{,}000$, indicating excellent convergence and sampling efficiency of the DA algorithm. The posterior mean of the expected death probability $\bbE(p) = \sum_{k=0}^{K} (k+1)\la_k/(K+2)$ is $0.477$ with $95\%$ BCI $[0.406, 0.548]$, which is in good agreement with the pooled proportion $0.440$.
+\emph{Results.} Table \ref{tab5.dea} reports the in--sample comparison. The \BernBino\ model with the BIC--selected degree $K=13$ attains the largest log--likelihood ($-33351.85$, about $164$ units higher than the beta--binomial), the smallest AIC and BIC (lower by about $304$ and $210$ respectively), the smallest L1 distance and MSE, and a bootstrap $p$--value of $1.000$. The out--of--sample results in Table \ref{tab5.dea.cv} confirm the finding: the CV log--likelihood of \BernBino\ ($-100139.2$) is about $414$ units higher than the best parametric model, the CV L1 is almost halved, and $K=8$ is selected by the BIC in all $15$ training folds. The estimated Bernstein prior of the ability, whose weights concentrate on the components $k = 6, 12, 7$ (i.e., a mixture of $\mBeta(7,8)$, $\mBeta(13,2)$ and $\mBeta(8,7)$), is a wide multi--component density that the two--parameter priors cannot reproduce. In summary, the proposed model again outperforms all competitors both in--sample and out--of--sample on this large dataset.
 
-Figure \ref{fig5.4} displays the posterior mean of the prior density $\pi(p)$ of the death probability together with its pointwise $95\%$ credible band, and Figure \ref{fig5.5} shows the result of the posterior predictive check: the observed per--litter death proportions fall well inside the posterior predictive band, and the Bayesian $p$--value based on the Pearson discrepancy is $0.075$, indicating that the fitted \BernBino\ model adequately describes the observed data.
-
-\begin{Table} \label{tab5.3} {\rm \hspace{-0.2cm}{\bf .}
-Posterior inference of $\bla$ for the $\BernBino(N_i,4,\bla)$ model based on $30{,}000$ posterior samples.
+\begin{Table} \label{tab5.dea} {\rm \hspace{-0.2cm}{\bf .}
+In--sample comparison of the five fitted distributions for the de Ayala mathematics test data ($n=19601$, $m=5$).
 \vspace{-0.1cm}
 \begin{center}
-\renewcommand{\arraystretch}{1.1} \tabcolsep 0.15in
-\begin{tabular}{|c|r|r|r|r|r|r|}  \hline\hline
-    $k$ & Post. mean & Post. sd & 2.5\% & 97.5\% & ESS & $\hat{R}$ \\ \hline
-    0 & 0.2878 & 0.0702 & 0.1585 & 0.4318 & 30000 & 1.0000 \\
-    1 & 0.1828 & 0.0643 & 0.0717 & 0.3202 & 32931 & 1.0000 \\
-    2 & 0.1420 & 0.0583 & 0.0443 & 0.2679 & 30544 & 1.0000 \\
-    3 & 0.1566 & 0.0603 & 0.0542 & 0.2864 & 34347 & 1.0001 \\
-    4 & 0.2308 & 0.0647 & 0.1148 & 0.3663 & 31072 & 1.0001 \\ \hline\hline
+\renewcommand{\arraystretch}{1.1} \tabcolsep 0.07in \scriptsize
+\begin{tabular}{|l|c|r|r|r|r|r|r|r|}  \hline\hline
+    Model & \#par & \textsf{logLik} & \textsf{AIC} & \textsf{BIC} & L1 & MSE & $p$-value & $\textsf{Rank}_{L}$ \\ \hline
+    $\Binomial(5,p)$ & 1 & $-35797.74$ & $71597.49$ & $71605.37$ & 0.1978 & 0.006103 & 0.001 & 5 \\
+    $\BetaBino(5,\al,\be)$ & 2 & $-33516.01$ & $67036.01$ & $67051.78$ & 0.0671 & 0.000517 & 0.772 & 4 \\
+    Logit-N$(5)$ & 2 & $-33536.36$ & $67076.72$ & $67092.49$ & 0.0711 & 0.000571 & 0.734 & 3 \\
+    KM$(5)$ & 2 & $-33533.79$ & $67071.57$ & $67087.34$ & 0.0692 & 0.000549 & 0.987 & 2 \\
+    $\BernBino(5,13,\bla)$ & 14 & $-33351.85$ & $66731.70$ & $66842.06$ & 0.0288 & 0.000130 & 1.000 & 1 \\ \hline\hline
+\end{tabular}
+\end{center} }
+\end{Table}
+
+\begin{Table} \label{tab5.dea.cv} {\rm \hspace{-0.2cm}{\bf .}
+Out--of--sample comparison (5--fold cross--validation repeated 3 times) for the de Ayala data.
+\vspace{-0.1cm}
+\begin{center}
+\renewcommand{\arraystretch}{1.1} \tabcolsep 0.12in \small
+\begin{tabular}{|l|r|r|r|}  \hline\hline
+    Model & CV logLik & CV L1 & CV MSE \\ \hline
+    $\Binomial(5,p)$ & $-107398.5$ & 0.1978 & 0.006133 \\
+    $\BetaBino(5,\al,\be)$ & $-100553.5$ & 0.0671 & 0.000548 \\
+    Logit-N$(5)$ & $-100614.6$ & 0.0711 & 0.000602 \\
+    KM$(5)$ & $-100606.8$ & 0.0692 & 0.000580 \\
+    $\BernBino(5,13,\bla)$ & $-100139.2$ & 0.0383 & 0.000224 \\ \hline\hline
 \end{tabular}
 \end{center} }
 \end{Table}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\linewidth]{figures/plot20.png}
-    \caption{$\;$ Posterior mean of the prior density $\pi(p)$ of the fetal death probability with its pointwise $95\%$ credible band (solid), together with the MLE--based density (dashed).}
-\label{fig5.4}
+    \includegraphics[width=0.85\linewidth]{figures/plot17.png}
+    \caption{$\;$ de Ayala mathematics test data: (upper) observed score distribution and fitted pmfs of the five models; (lower) corresponding residuals.}
+\label{fig5.dea}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\linewidth]{figures/plot21.png}
-    \caption{$\;$ Posterior predictive check: observed per--litter death proportions (points) versus the posterior predictive distribution (solid line with $95\%$ band).}
-\label{fig5.5}
+    \includegraphics[width=0.95\linewidth]{figures/plot18.png}
+    \caption{$\;$ Estimated prior densities $\pi(p)$ of the success probability under the four prior--based models for the two datasets.}
+\label{fig5.prior}
 \end{figure}
-
-\subsection{Discussion}    % Section 5.4
-
-Several findings are worth emphasizing. First, the real data analysis confirms the simulation results in \S4: the \BernBino\ distribution successfully captures the extra--binomial variation of real over--dispersed binomial data and is competitive with, and sometimes more flexible than, the mainstream beta--binomial, logit--normal and Kumaraswamy mixture models. Second, and more importantly, the estimated prior density $\pi(p)$ of the death probability provides an interpretable description of the underlying heterogeneity. As shown in Figure \ref{fig5.6}, all five fitted priors are U--shaped, reflecting the two subpopulations in the data: most litters in the iron--supplemented groups have a small death probability (around $0.05$--$0.10$), whereas most litters in the untreated group have a large death probability (around $0.76$). However, the fitted beta and Kumaraswamy priors put infinite mass at the two boundaries (their densities diverge as $p \to 0$ or $p \to 1$), and the fitted logit--normal prior becomes nearly uniform; in contrast, the \BernBino\ estimate is smooth and bounded on $[0,1]$, giving a more moderate and clearly interpretable picture of the two risk subpopulations. This demonstrates the main advantage of the proposed model: the Bernstein prior does not prespecify a parametric shape, so it can approximate any continuous prior density on $[0,1]$ and thus avoids the subjectivity in prior specification.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\linewidth]{figures/plot19.png}
-    \caption{$\;$ Estimated prior densities $\pi(p)$ of the fetal death probability under the five fitted models.}
-\label{fig5.6}
+    \includegraphics[width=0.95\linewidth]{figures/plot19.png}
+    \caption{$\;$ BIC curves for selecting the Bernstein degree $K$; the red points mark the minima ($K=15$ and $K=13$).}
+\label{fig5.bic}
 \end{figure}
 
-Third, the unit--specific trial numbers $N_i$ were handled by a natural extension of the proposed model, which makes the \BernBino\ distribution applicable to grouped binomial data with unequal group sizes, as commonly encountered in teratology, toxicology and clinical studies. Finally, the teratology data contain covariates (the treatment group and the hemoglobin level) that are strongly related to the death probability; incorporating these covariates through the regression model in \S2.5 is a promising direction and is left for future work.
+In summary, on both real datasets the proposed \BernBino\ distribution is the best model by every criterion considered, both in--sample and out--of--sample, and it provides a flexible and interpretable estimate of the prior density of the success probability. These results confirm that replacing the fixed beta prior with a Bernstein prior does not sacrifice parsimony in practice when the data are sufficiently informative, and that the extra parameters of \BernBino\ are rewarded rather than punished by the BIC and by out--of--sample validation on datasets with genuinely non--unimodal structure.
