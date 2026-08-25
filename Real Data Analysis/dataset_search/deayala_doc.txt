@@ -1,0 +1,22 @@
+_D_e_s_c_r_i_p_t_i_o_n _o_f _d_e_A_y_a_l_a _d_a_t_a
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Mathematics data from de Ayala (2009; pg. 14); 5 item dataset in
+     table format.
+
+_A_u_t_h_o_r(_s):
+
+     Phil Chalmers <mailto:rphilip.chalmers@gmail.com>
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     de Ayala, R. J. (2009). _The theory and practice of item response
+     theory_. Guilford Press.
+
+_E_x_a_m_p_l_e_s:
+
+     dat <- expand.table(deAyala)
+     head(dat)
+     itemstats(dat)
+     

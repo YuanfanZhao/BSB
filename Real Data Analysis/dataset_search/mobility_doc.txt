@@ -1,0 +1,48 @@
+_W_o_m_e_n'_s _M_o_b_i_l_i_t_y
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     A rural subsample of 8445 women from the Bangladesh Fertility
+     Survey of 1989.
+
+_F_o_r_m_a_t:
+
+     The dimension of interest is women's mobility of social freedom.
+     Women were asked whether they could engage in the following
+     activities alone (1 = yes, 0 = no):
+
+     Item 1 Go to any part of the village/town/city.
+
+     Item 2 Go outside the village/town/city.
+
+     Item 3 Talk to a man you do not know.
+
+     Item 4 Go to a cinema/cultural show.
+
+     Item 5 Go shopping.
+
+     Item 6 Go to a cooperative/mothers' club/other club.
+
+     Item 7 Attend a political meeting.
+
+     Item 8 Go to a health centre/hospital.
+
+_S_o_u_r_c_e:
+
+     Bangladesh Fertility Survey of 1989 (Huq and Cleland, 1990).
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Bartholomew, D., Steel, F., Moustaki, I. and Galbraith, J. (2002)
+     _The Analysis and Interpretation of Multivariate Data for Social
+     Scientists_. London: Chapman and Hall.
+
+     Huq, N. and Cleland, J. (1990) _Bangladesh Fertility Survey,
+     1989_. Dhaka: National Institute of Population Research and
+     Training (NIPORT).
+
+_E_x_a_m_p_l_e_s:
+
+     ## Descriptive statistics for Mobility data
+     descript(Mobility)
+     
