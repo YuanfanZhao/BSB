@@ -1,3 +1,137 @@
 %!TEX root = BSB.tex
 
-\section{$\!\!\!\!\!\!\!$. Real data analysis}    % Section 4 
+\section{$\!\!\!\!\!\!\!$. Real data analysis}    % Section 5
+
+\subsection{Data description and overdispersion check}   % Section 5.1
+
+To examine the practical performance of the proposed \BernBino\ distribution, we apply it to a classic real dataset with pronounced over--dispersion: the low--iron rat teratology data (Shepard \emph{et al.}, 1980; Moore \& Tsiatis, 1991). The data originate from a laboratory study of the effects of dietary regimens on fetal development in rats. A total of $n = 58$ pregnant rats were fed iron--deficient diets and were divided into four groups: group 1 received only placebo injections (untreated low--iron group), while groups 2--4 received iron supplements according to different injection schedules (injections on day 7 or day 10 only, on days 0 and 7, or weekly). For each litter, the number of dead fetuses $R_i$ and the litter size $N_i$ (the total number of fetuses) were recorded, together with the dam's hemoglobin level $hb_i$ and the group indicator $grp_i \in \{1,2,3,4\}$.
+
+Since each fetus constitutes a Bernoulli trial (dead or alive), the litter--wise count $R_i$ naturally follows a binomial model $\Binomial(N_i, p_i)$ with a litter--specific death probability $p_i$; heterogeneity across litters makes the observed variation larger than that of a binomial model, i.e., the data exhibit extra--binomial variation. Table \ref{tab5.1} summarizes the data by group, and Figure \ref{fig5.1} displays the per--litter death proportions. We can see that the untreated low--iron group (group 1) has a much higher average death proportion ($0.758$) than the iron--supplemented groups ($0.035$--$0.102$), indicating a strong treatment effect at the group level, and that the death proportion varies considerably even within each group.
+
+To quantify the over--dispersion, we first fit a simple $\Binomial(N_i, p)$ model with the pooled MLE $\hp = \sum_i R_i / \sum_i N_i = 267/607 = 0.4399$. Under the binomial assumption, the dispersion statistic
+\begin{eqnarray}
+   \hphi \teq \frac{1}{n-1} \sum_{i=1}^{n} \frac{(R_i - N_i \hp)^2}{N_i \hp(1-\hp)}
+\end{eqnarray}
+is approximately $\chi^2_{n-1}$ distributed when there is no extra--binomial variation. For the teratology data, we obtain $\hphi = 6.929$ with the corresponding $p$-value $4.7 \times 10^{-52}$, which strongly rejects the binomial assumption and confirms the existence of severe over--dispersion. This motivates the use of binomial mixture models such as the beta--binomial and the proposed \BernBino\ distribution.
+
+\begin{Table} \label{tab5.1} {\rm \hspace{-0.2cm}{\bf .}
+Group--wise summary statistics of the low--iron rat teratology data.
+\vspace{-0.1cm}
+\begin{center}
+\renewcommand{\arraystretch}{1.15} \tabcolsep 0.09in \small
+\begin{tabular}{|c|c|r|r|r|r|r|}  \hline\hline
+    Group & \# litters & Mean $N$ & $\sum N_i$ & $\sum R_i$ & Death prop. & Mean $hb$ \\ \hline
+    1 (untreated) & 31 & 10.55 & 327 & 248 & 0.758 & 4.59  \\
+    2 (day 7 or 10) & 12 & 9.83 & 118 & 12 & 0.102 & 9.01  \\
+    3 (days 0 and 7) & 5 & 11.60 & 58 & 2 & 0.034 & 10.92 \\
+    4 (weekly) & 10 & 10.40 & 104 & 5 & 0.048 & 14.74 \\ \hline
+    Overall & 58 & 10.47 & 607 & 267 & 0.440 & 8.55  \\ \hline\hline
+\end{tabular}
+\end{center} }
+\end{Table}
+
+\begin{figure}[H]
+    \centering
+    \subfigure[$\;$ Per-litter death proportion by group]
+    {
+        \centering
+        \includegraphics[width=0.49\linewidth]{figures/plot16.png}
+    }
+    \caption{$\;$ (a) Boxplot and jittered points of the per--litter death proportions by group; (b) histogram of the death proportions with the pooled mean indicated by the dashed line.}
+\label{fig5.1}
+\end{figure}
+
+\subsection{Model fitting and comparison}    % Section 5.2
+
+We fit the five distributions studied in the simulation studies of \S4.2 to the pooled $58$ litters: the $\Binomial(N_i, p)$, the $\BetaBino(N_i, \al, \be)$, the logit--normal binomial (Logit-N), the Kumaraswamy binomial (KM) and the proposed $\BernBino(N_i, K, \bla)$. Since the litter sizes are not identical, we extend the model in (\ref{eqn2.1})--(\ref{eqn2.2}) to unit--specific trial numbers $m_i \teq N_i$; this is a natural extension because in the pmf (\ref{eqn2.2}) and the coefficient $a_{ik}$ in (\ref{zyffour2.5}) the common $m$ is simply replaced by $N_i$, while the MM iterations (\ref{zyffour2.8}) and the DA algorithm (Algorithm \ref{alg1}) remain unchanged. The parameters of the four parametric mixture models are estimated by maximizing their log--likelihoods with the same numerical integration procedure as in \S4.2, and the weights $\bla$ of the \BernBino\ model are estimated by the MM algorithm.
+
+The degree $K$ of the \BernBino\ model is selected over the grid $K = 1, \ldots, 15$ by minimizing the BIC (with the AIC as a secondary criterion); the BIC curve in Figure \ref{fig5.3} attains its minimum at $K = 4$, while the AIC selects $K = 5$. Table \ref{tab5.2} compares the five models in terms of the number of parameters, the log--likelihood, the AIC, the BIC, the Pearson goodness--of--fit statistic
+\begin{eqnarray*}
+   X^2 \teq \sum_{i=1}^{n} \frac{\big(R_i - N_i \mu_1\big)^2}{N_i \mu_1 - N_i \mu_2 + N_i(N_i-1)(\mu_2 - \mu_1^2)},
+\end{eqnarray*}
+where $\mu_j \teq \bbE(p^j)$, $j=1,2$, is evaluated under the fitted mixing distribution of $p$ (the denominator is exactly $\Var(X_i)$ for a binomial mixture model), the parametric bootstrap $p$--value of the Pearson statistic (based on $B = 999$ simulated datasets), the distributional MAE defined in \S4.2, and the ranks of the models by the AIC and the $p$--value.
+
+From Table \ref{tab5.2} and Figure \ref{fig5.2}, we can draw the following conclusions. First, the binomial model is severely inadequate: its log--likelihood ($-290.451$) is much smaller than those of the other four models, its Pearson statistic ($394.942$) is extremely large, and the bootstrap $p$--value is almost zero. Second, the four mixture models all fit the data much better and are quite close to each other: the range of their log--likelihoods is only about $1.3$ units, and the beta--binomial achieves the smallest AIC and BIC because of its parsimony. Third, the proposed \BernBino\ model with the BIC--selected $K=4$ is competitive with the established models: its log--likelihood ($-124.593$) is within $1.3$ units of the best value, and its bootstrap $p$--value ($0.053$) indicates that the model is not rejected at the $5\%$ significance level. Moreover, its log--likelihood keeps increasing with $K$ (e.g., $-123.507$ for $K=5$, $-123.140$ for $K=6$, and $-122.367$ for $K=15$, which is higher than that of any parametric competitor), and the Pearson $p$--value increases to $0.218$ and $0.382$ for $K=5$ and $K=6$, respectively. This is consistent with the Bernstein approximation property in Theorem \ref{thm1}: as $K$ increases, the Bernstein prior can approximate any continuous prior density on $[0,1]$ more and more accurately, at the price of additional parameters.
+
+\begin{Table} \label{tab5.2} {\rm \hspace{-0.2cm}{\bf .}
+Comparison of the five fitted distributions for the rat teratology data ($n=58$).
+\vspace{-0.1cm}
+\begin{center}
+\renewcommand{\arraystretch}{1.1} \tabcolsep 0.05in \scriptsize
+\begin{tabular}{|l|c|r|r|r|r|r|r|r|r|}  \hline\hline
+    Model & \#par & \textsf{logLik} & \textsf{AIC} & \textsf{BIC} & $X^2$ & $p$-value & \textsf{MAE} & $\textsf{Rank}_A$ & $\textsf{Rank}_p$ \\ \hline
+    $\Binomial(N_i,p)$ & 1 & $-290.451$ & $582.903$ & $584.963$ & $394.942$ & $0.001$ & $0.1273$ & 5 & 5 \\
+    $\BetaBino(N_i,\al,\be)$ & 2 & $-123.326$ & $250.652$ & $254.773$ & $67.568$ & $0.419$ & $0.0775$ & 1 & 1 \\
+    Logit-N$(N_i)$ & 2 & $-123.755$ & $251.510$ & $255.630$ & $72.957$ & $0.108$ & $0.0780$ & 2 & 3 \\
+    KM$(N_i)$ & 2 & $-123.756$ & $251.511$ & $255.632$ & $68.535$ & $0.333$ & $0.0781$ & 3 & 2 \\
+    $\BernBino(N_i,4,\bla)$ & 5 & $-124.593$ & $259.185$ & $269.487$ & $74.862$ & $0.053$ & $0.0782$ & 4 & 4 \\ \hline\hline
+\end{tabular}
+\end{center} }
+\end{Table}
+
+\begin{figure}[H]
+    \centering
+    \subfigure[$\;$ Fitted pmf at the modal litter size $N=10$]
+    {
+        \centering
+        \includegraphics[width=0.49\linewidth]{figures/plot17.png}
+    }
+    \caption{$\;$ (a) Observed relative frequencies and fitted pmfs of the five models at the modal litter size $N=10$; (b) Pearson residuals of the \BernBino\ model against the litter size.}
+\label{fig5.2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/plot18.png}
+    \caption{$\;$ BIC and AIC curves for selecting the degree $K$ of the \BernBino\ model; the red points mark the minima.}
+\label{fig5.3}
+\end{figure}
+
+\subsection{Bayesian inference via the DA algorithm}    % Section 5.3
+
+We next perform a full Bayesian analysis of the \BernBino\ model with the BIC--selected degree $K=4$ using the DA algorithm in \S3.2. Following the non--informative prior $\bal = \1_{K+1}$ (Prior $\mbox{P}_1$ in \S4.3), we run $M=4$ independent chains, each with $G = 10{,}000$ iterations and a burn--in period of $B = 2{,}500$, and combine the retained samples to obtain a posterior sample of size $30{,}000$. Table \ref{tab5.3} reports the posterior mean, the posterior standard deviation, the $95\%$ Bayesian credible interval (BCI), the effective sample size (ESS) and the Gelman--Rubin convergence statistic $\hat{R}$ for each weight $\la_k$. All $\hat{R}$ values are no larger than $1.0001$ and all ESS values exceed $10{,}000$, indicating excellent convergence and sampling efficiency of the DA algorithm. The posterior mean of the expected death probability $\bbE(p) = \sum_{k=0}^{K} (k+1)\la_k/(K+2)$ is $0.477$ with $95\%$ BCI $[0.406, 0.548]$, which is in good agreement with the pooled proportion $0.440$.
+
+Figure \ref{fig5.4} displays the posterior mean of the prior density $\pi(p)$ of the death probability together with its pointwise $95\%$ credible band, and Figure \ref{fig5.5} shows the result of the posterior predictive check: the observed per--litter death proportions fall well inside the posterior predictive band, and the Bayesian $p$--value based on the Pearson discrepancy is $0.075$, indicating that the fitted \BernBino\ model adequately describes the observed data.
+
+\begin{Table} \label{tab5.3} {\rm \hspace{-0.2cm}{\bf .}
+Posterior inference of $\bla$ for the $\BernBino(N_i,4,\bla)$ model based on $30{,}000$ posterior samples.
+\vspace{-0.1cm}
+\begin{center}
+\renewcommand{\arraystretch}{1.1} \tabcolsep 0.15in
+\begin{tabular}{|c|r|r|r|r|r|r|}  \hline\hline
+    $k$ & Post. mean & Post. sd & 2.5\% & 97.5\% & ESS & $\hat{R}$ \\ \hline
+    0 & 0.2878 & 0.0702 & 0.1585 & 0.4318 & 30000 & 1.0000 \\
+    1 & 0.1828 & 0.0643 & 0.0717 & 0.3202 & 32931 & 1.0000 \\
+    2 & 0.1420 & 0.0583 & 0.0443 & 0.2679 & 30544 & 1.0000 \\
+    3 & 0.1566 & 0.0603 & 0.0542 & 0.2864 & 34347 & 1.0001 \\
+    4 & 0.2308 & 0.0647 & 0.1148 & 0.3663 & 31072 & 1.0001 \\ \hline\hline
+\end{tabular}
+\end{center} }
+\end{Table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{figures/plot20.png}
+    \caption{$\;$ Posterior mean of the prior density $\pi(p)$ of the fetal death probability with its pointwise $95\%$ credible band (solid), together with the MLE--based density (dashed).}
+\label{fig5.4}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{figures/plot21.png}
+    \caption{$\;$ Posterior predictive check: observed per--litter death proportions (points) versus the posterior predictive distribution (solid line with $95\%$ band).}
+\label{fig5.5}
+\end{figure}
+
+\subsection{Discussion}    % Section 5.4
+
+Several findings are worth emphasizing. First, the real data analysis confirms the simulation results in \S4: the \BernBino\ distribution successfully captures the extra--binomial variation of real over--dispersed binomial data and is competitive with, and sometimes more flexible than, the mainstream beta--binomial, logit--normal and Kumaraswamy mixture models. Second, and more importantly, the estimated prior density $\pi(p)$ of the death probability provides an interpretable description of the underlying heterogeneity. As shown in Figure \ref{fig5.6}, all five fitted priors are U--shaped, reflecting the two subpopulations in the data: most litters in the iron--supplemented groups have a small death probability (around $0.05$--$0.10$), whereas most litters in the untreated group have a large death probability (around $0.76$). However, the fitted beta and Kumaraswamy priors put infinite mass at the two boundaries (their densities diverge as $p \to 0$ or $p \to 1$), and the fitted logit--normal prior becomes nearly uniform; in contrast, the \BernBino\ estimate is smooth and bounded on $[0,1]$, giving a more moderate and clearly interpretable picture of the two risk subpopulations. This demonstrates the main advantage of the proposed model: the Bernstein prior does not prespecify a parametric shape, so it can approximate any continuous prior density on $[0,1]$ and thus avoids the subjectivity in prior specification.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{figures/plot19.png}
+    \caption{$\;$ Estimated prior densities $\pi(p)$ of the fetal death probability under the five fitted models.}
+\label{fig5.6}
+\end{figure}
+
+Third, the unit--specific trial numbers $N_i$ were handled by a natural extension of the proposed model, which makes the \BernBino\ distribution applicable to grouped binomial data with unequal group sizes, as commonly encountered in teratology, toxicology and clinical studies. Finally, the teratology data contain covariates (the treatment group and the hemoglobin level) that are strongly related to the death probability; incorporating these covariates through the regression model in \S2.5 is a promising direction and is left for future work.
