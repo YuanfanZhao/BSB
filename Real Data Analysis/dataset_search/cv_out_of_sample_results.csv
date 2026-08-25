@@ -1,0 +1,26 @@
+dataset,model,CV_logLik,CV_L1,CV_MSE,notes
+Mobility (n=8445,m=8),Binomial,-52704.25,0.12460,0.001370,5-fold x 3 reps
+Mobility (n=8445,m=8),Beta-Binomial,-49237.36,0.10222,0.000966,
+Mobility (n=8445,m=8),Logit-Normal,-49101.33,0.10067,0.000904,
+Mobility (n=8445,m=8),Kumaraswamy,-49361.93,0.10943,0.001102,
+Mobility (n=8445,m=8),Bern-Bino,-47795.48,0.05641,0.000311,Bern wins (+1306); K=15 all splits
+deAyala (n=19601,m=5),Binomial,-107398.5,0.19777,0.006133,5-fold x 3 reps
+deAyala (n=19601,m=5),Beta-Binomial,-100553.5,0.06715,0.000548,
+deAyala (n=19601,m=5),Logit-Normal,-100614.6,0.07108,0.000602,
+deAyala (n=19601,m=5),Kumaraswamy,-100606.8,0.06916,0.000580,
+deAyala (n=19601,m=5),Bern-Bino,-100139.2,0.03830,0.000224,Bern wins (+414); K=8 all splits
+orob1 (n=16),Binomial,-545.58,NA,NA,4-fold x 2 reps
+orob1 (n=16),Beta-Binomial,-115.52,NA,NA,
+orob1 (n=16),Logit-Normal,-Inf,NA,NA,
+orob1 (n=16),Kumaraswamy,-Inf,NA,NA,
+orob1 (n=16),Bern-Bino,-455.42,NA,NA,Bern LOSES out-of-sample (in-sample win was overfitting)
+cbpp (n=56),Binomial,-248.09,NA,NA,5-fold x 2 reps
+cbpp (n=56),Beta-Binomial,-192.80,NA,NA,
+cbpp (n=56),Logit-Normal,-Inf,NA,NA,
+cbpp (n=56),Kumaraswamy,-Inf,NA,NA,
+cbpp (n=56),Bern-Bino,-2192.70,NA,NA,Bern LOSES out-of-sample
+toxop (n=34),Binomial,-169.76,NA,NA,5-fold x 2 reps
+toxop (n=34),Beta-Binomial,-153.63,NA,NA,
+toxop (n=34),Logit-Normal,-Inf,NA,NA,
+toxop (n=34),Kumaraswamy,-Inf,NA,NA,
+toxop (n=34),Bern-Bino,-1100.77,NA,NA,Bern LOSES out-of-sample
