@@ -1,0 +1,6 @@
+"Model","Estimated"
+"Binomial","p = 0.3187"
+"Beta-Binomial","a = 2.4278, b = 5.1282"
+"Logit-Normal","mu = -0.8647, sigma = 0.8287"
+"Kumaraswamy","a = 1.8650, b = 5.8829"
+"Bern-Bino","K = 15, lambda = (0, 0, 0, 0.0326, 0.9232, 1e-04, 0, 0, 0, 0, 0, 0, 0, 0, 5e-04, 0.0435)"
