@@ -1,119 +1,80 @@
-%!TEX root = BSB.tex
-
 \section{$\!\!\!\!\!\!\!$. Real data analysis}    % Section 5
 
-In this section, we evaluate the practical performance of the proposed \BernBino\ distribution on two real datasets of binomial counts with a fixed number of trials $m$: the Women's Mobility data from the Bangladesh Fertility Survey of 1989 and the mathematics test data of de Ayala (2009). Both datasets are over--dispersed and exhibit distributional features (e.g., a secondary mode or a wide, non--Beta shape) that the standard binomial mixture models can hardly capture.
+\subsection{Women's mobility data}      % Section 5.1
 
-\emph{Evaluation protocol.} To avoid overfitting, we adopt a strict out--of--sample protocol. The full sample of $n$ observations is randomly split \emph{once} into a training set of size $n_1$ ($70\%$) and a held--out test set of size $n_2$ ($30\%$). The test set is separated from the very beginning and \emph{never} participates in any model fitting or in the selection of the Bernstein degree $K$; it is used only for the final evaluation. On the training set we fit the five distributions considered in \S4.2, namely the $\Binomial(m,p)$, the $\BetaBino(m,\al,\be)$, the logit--normal binomial (Logit-N), the Kumaraswamy binomial (KM) and the proposed $\BernBino(m,K,\bla)$, by maximum likelihood (the MM algorithm for \BernBino). The degree $K$ of \BernBino\ is selected on the training set in two ways and both are compared on the test set: (A) by the BIC over $K = 1,\ldots,30$; and (B) by a five--fold cross--validation repeated three times \emph{within the training set}, where for each candidate $K$ the model is fitted on four fifths of the training set and evaluated on the remaining fifth (with either the validation log--likelihood or the validation MSE as the criterion), and the $K$ maximizing the average validation log--likelihood (or minimizing the average validation MSE) is chosen. The variant of \BernBino\ with better held--out test performance determines the final $K$. Finally, all fitted models are evaluated on the held--out test set via the test log--likelihood (test logLik), the test L1 distance and the test MSE.
+A rural subsample of the Bangladesh Fertility Survey of 1989, conducted by the \textit{National Institute of Population Research and Training} (NIPORT), Dhaka (\cite{HC1990}). The data were subsequently compiled and analysed by \textcite{GMBS2002}. The data set is distributed with the \tsf{ltm} package for latent variable modelling (\cite{Rizopoulos2006}) and is loaded by \tsf{library(ltm)} and \tsf{data(Mobility)}.
 
-\subsection{Women's mobility data}    % Section 5.1
+This survey measures the social freedom of women in rural Bangladesh outside the household, containing 8445 samples. Each respondent was asked whether she was able to perform, alone, eight activities of daily life. The activities range from local movement to public participation, so their difficulty and their social acceptability differ substantially, and the degree of freedom varies considerably across women. 
 
-\emph{Data.} The Women's Mobility data (Huq \& Cleland, 1990; Bartholomew \emph{et al.}, 2002) consist of a rural subsample of $n = 8445$ women from the Bangladesh Fertility Survey of 1989. Each woman was asked whether she could, alone, carry out eight activities: going to any part of the village/town/city, going outside the village/town/city, talking to an unknown man, going to a cinema/cultural show, going shopping, going to a cooperative/mothers' club/other club, attending a political meeting and going to a health centre/hospital. Let $X_i \in \{0,1,\ldots,8\}$ be the number of activities that woman $i$ is permitted to perform; treating the eight items as Bernoulli trials, $X_i \sim \Binomial(8, p_i)$ with a woman--specific mobility level $p_i$. The observed score distribution is strongly over--dispersed and non--unimodal: the counts of $X = 0,\ldots,8$ are $829, 1617, 2369, 1533, 1126, 389, 193, 143, 246$, with a mode at $X=2$ and a clear secondary mode at $X=8$ (246 women, $2.9\%$, who are permitted all eight activities). Such a structure cannot be represented by any unimodal prior on $p$.
+The raw data consist of eight binary item indicators. The variable used for model fitting is the total score
+obtained by summing these indicators:
 
-\emph{Results.} Following the protocol above, the $8445$ women are split into a training set of $n_1 = 5912$ and a held--out test set of $n_2 = 2533$. Table \ref{tab5.mob} reports the in--sample comparison on the full data as a reference: the \BernBino\ model attains the largest log--likelihood, the smallest AIC and BIC, and a bootstrap $p$--value of $1.000$. For the out--of--sample evaluation, the BIC on the training set selects $K = 15$, whereas the inner five--fold cross--validation selects $K = 25$ (by validation log--likelihood) and $K = 21$ (by validation MSE). On the held--out test set, the variant with $K=25$ performs best (test logLik $-4770.85$ and test MSE $0.000434$, both better than the variants with $K=15$ and $K=21$), so $K=25$ is taken as the final degree. Table \ref{tab5.mob.cv} reports the final held--out test evaluation: the \BernBino\ model achieves the largest test log--likelihood ($-4770.85$, about $142$ units higher than the best parametric model) and the smallest test L1 and test MSE (about $0.63$ and $0.38$ times those of the best parametric model), while Figure \ref{fig5.mob} shows that its fitted score distribution tracks the held--out test frequencies much more closely than the parametric models, especially at the secondary mode $X=8$. Hence the advantage of the proposed model is genuine and holds on data that never participated in fitting.
+\vkU
+\baselineskip 0.10in
+\begin{Table} \label{zyf.BSB.tab4} {\rm  \ \  \hspace*{-0.5cm}{\bf .}
+Data description of Bangladesh women's mobility dataset
+\vspace{-0.3cm}
+\begin{center}
+\renewcommand{\arraystretch}{1.2} \tabcolsep 0.135in \doublerulesep 0.2pt
+\begin{tabular}{llll}  \hline\hline
+    Variable & Value & Description & Role \\ \hline
+    Item 1 & 0/1 & Going to any part of the village, town or city & Item \\ 
+    Item 2 & 0/1 & Going outside the village, town or city & Item \\ 
+    Item 3 & 0/1 & Talking to an unknown man & Item \\ 
+    Item 4 & 0/1 & Going to a cinema or cultural show & Item \\
+    Item 5 & 0/1 & Going shopping & Item \\ 
+    Item 6 & 0/1 & Going to a cooperative, mothers' club or other club & Item \\
+    Item 7 & 0/1 & Attending a political meeting & Item \\ 
+    Item 8 & 0/1 & Going to a health centre or hospital & Item \\
+    score ($X$) & 0--8 & Number of activities that may be performed alone & Response \\ \hline\hline
+\end{tabular}
+\end{center} }
+\end{Table}
+\vspace{-0.3cm}
+\noi  {\small   Note. For every item, 1 = the activity may be performed alone and 0 = it may not.}
+\baselineskip 0.30in
 
-The estimated Bernstein prior of the mobility level,
+\vkL
+The score distribution is strongly over--dispersed, left--skewed and non--unimodal. The mode is attained at $X = 2$ (28.1 \%), while a clearly separated secondary mode appears at $X = 8$, i.e. 246 women (2.9 \%) may perform all eight activities alone. The distribution therefore mixes a large restricted subpopulation with a small fully unrestricted one, a structure that no unimodal prior on $p$ can represent.
+
+The 8445 women are randomly split into a training set of $n_1 = 5912$ and a test set of $n_2 = 2533$. We perform the distributional fitting of binomial, Beta--Bino, LogitN--Bino, KM--Bino together with Bern--Bino distribution on training set and evaluate their fitting performance on test set.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\linewidth]{figures/plot16.png}
+    \caption{Comparison of the fitting performance for various distributions on the test set.}
+    \label{zyf.BSB.fig7}
+\end{figure}
+
+Table \ref{zyf.BSB.tab5} reports the final test evaluation: the Bern-Bino distribution achieves the largest test log–likelihood ($-$4769.26, about 142 units higher than others) and the smallest test MSE and $L_1$ (about 0.36 and 0.61 times those of the best parametric distributions), while Figure \ref{zyf.BSB.fig7} shows that its fitted score distribution tracks the test frequencies much more closely than other distributions, especially at the secondary mode $X = 8$. Hence the advantage of the proposed model is genuine and holds on data that never participated in fitting.
+
+\vkU
+\baselineskip 0.10in
+\begin{Table} \label{zyf.BSB.tab5} {\rm  \ \  \hspace*{-0.5cm}{\bf .}
+Fitting performance for Bangladesh women's mobility score of five distributions on test set, respectively
+\vspace{-0.2cm}
+\begin{center}
+\renewcommand{\arraystretch}{1.2} \tabcolsep 0.18in \doublerulesep 0.2pt
+\begin{tabular}{llllll}  \hline\hline
+    \MC{1}{c}{Distribution} & \MC{1}{c}{\tsf{Log-likelihood}} & \MC{1}{c}{\tsf{AIC}} & \MC{1}{c}{\tsf{BIC}} & \MC{1}{c}{\tsf{MSE}} & \MC{1}{c}{\tsf{$L_1$}} \\ \hline
+    Binomial                & $-$5285.79                      & 10573.57             & 10579.41             & 0.001504             & 0.1289                 \\
+    Beta--Bino              & $-$4926.18                      & 9856.36              & 9868.03              & 0.001186             & 0.1108                 \\
+    LogitN--Bino            & \bf{$-$4912.77}                 & \bf{9829.54}         & \bf{9841.21}         & \bf{0.001133}        & \bf{0.1075}            \\ 
+    KM--Bino                & $-$4937.87                      & 9879.73              & 9891.41              & 0.001313             & 0.1158                 \\ 
+    Bern--Bino              & \redbf{$-$4769.26}              & \redbf{9590.52}      & \redbf{9742.29}      & \redbf{0.000413}     & \redbf{0.0655}         \\ \hline\hline
+\end{tabular}
+\end{center} }
+\end{Table}
+\baselineskip 0.30in
+
+\vkL
+The estimated Bernstein prior of the mobility level, 
 \begin{eqnarray*}
-   \pi(p) \;\approx\; 0.92\,\mBeta(p|5,11) + 0.03\,\mBeta(p|4,12) + 0.04\,\mBeta(p|16,1),
+    \pi(p) &\ap& 0.01 \times \mBeta(p | 1, 26) + 0.16 \times \mBeta(p | 7, 20) + 0.78 \times \mBeta(p | 8, 19) \\ [2mm]
+    && +\; 0.03 \times \mBeta(p | 24, 3)  + 0.02 \times \mBeta(p | 26, 1), 
 \end{eqnarray*}
-concentrates about $92\%$ of the mass on a restricted subpopulation (mode around $0.27$) and the remaining mass on a fully unrestricted subpopulation with $p$ close to $1$, which directly reflects the secondary mode at $X=8$ and is impossible for the beta, logit--normal and Kumaraswamy priors. In summary, on the Women's Mobility data the \BernBino\ model is best on the held--out test set and provides a flexible, interpretable estimate of the prior density of $p$.
+concentrates about 94\% of the mass on a restricted subpopulation (mode around 0.26) and the remaining mass on a fully unrestricted subpopulation with $p$ close to 1, which directly reflects the secondary mode and is impossible for the beta, logit–normal and Kumaraswamy priors. In summary, on the Women’s Mobility data, the Bern-Bino distribution is best on the test set and provides a flexible, interpretable estimate of the prior density of $p$.
 
-\begin{Table} \label{tab5.mob} {\rm \hspace{-0.2cm}{\bf .}
-In--sample comparison of the five fitted distributions for the Women's Mobility data ($n=8445$, $m=8$).
-\vspace{-0.1cm}
-\begin{center}
-\renewcommand{\arraystretch}{1.1} \tabcolsep 0.07in \scriptsize
-\begin{tabular}{|l|c|r|r|r|r|r|r|r|}  \hline\hline
-    Model & \#par & \textsf{logLik} & \textsf{AIC} & \textsf{BIC} & L1 & MSE & $p$-value & $\textsf{Rank}_{L}$ \\ \hline
-    $\Binomial(8,p)$ & 1 & $-17566.34$ & $35134.67$ & $35141.71$ & 0.1228 & 0.001328 & 0.001 & 5 \\
-    $\BetaBino(8,\al,\be)$ & 2 & $-16409.09$ & $32822.17$ & $32836.26$ & 0.0955 & 0.000921 & 0.001 & 4 \\
-    Logit-N$(8)$ & 2 & $-16363.82$ & $32731.65$ & $32745.73$ & 0.0941 & 0.000858 & 0.001 & 3 \\
-    KM$(8)$ & 2 & $-16450.44$ & $32904.87$ & $32918.95$ & 0.1005 & 0.001056 & 0.120 & 2 \\
-    $\BernBino(8,25,\bla)$ & 26 & $-15929.01$ & $31890.02$ & $32002.68$ & 0.0512 & 0.000266 & 1.000 & 1 \\ \hline\hline
-\end{tabular}
-\end{center} }
-\end{Table}
+\subsection{MathExam14W data}       % Section 5.2
 
-\begin{Table} \label{tab5.mob.cv} {\rm \hspace{-0.2cm}{\bf .}
-Out--of--sample comparison on the held--out test set ($n_2=2533$; models fitted on the training set only, $K=25$ by inner cross--validation) for the Women's Mobility data.
-\vspace{-0.1cm}
-\begin{center}
-\renewcommand{\arraystretch}{1.1} \tabcolsep 0.12in \small
-\begin{tabular}{|l|c|r|r|r|}  \hline\hline
-    Model & $K$ & test logLik & test L1 & test MSE \\ \hline
-    $\Binomial(8,p)$ & --- & $-5285.79$ & 0.1289 & 0.001504 \\
-    $\BetaBino(8,\al,\be)$ & --- & $-4926.18$ & 0.1108 & 0.001186 \\
-    Logit-N$(8)$ & --- & $-4912.77$ & 0.1075 & 0.001133 \\
-    KM$(8)$ & --- & $-4937.87$ & 0.1158 & 0.001313 \\
-    $\BernBino(8,25,\bla)$ & 25 & $-4770.85$ & 0.0674 & 0.000434 \\ \hline\hline
-\end{tabular}
-\end{center} }
-\end{Table}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{figures/plot16.png}
-    \caption{$\;$ Women's Mobility data: (upper) observed score distribution on the held--out test set and fitted pmfs of the five models (fitted on the training set); (lower) corresponding residuals.}
-\end{figure}
-\label{fig5.mob}
-
-\subsection{Mathematics test data}    % Section 5.2
-
-\emph{Data.} The second dataset is the five--item mathematics test data given by de Ayala (2009, p. 14), which is widely used as a benchmark in item response theory. It is provided as a response--pattern frequency table with a total of $n = 19601$ examinees; each examinee answers $m=5$ binary items, so that the score $X_i \in \{0,1,\ldots,5\}$ is the number of correct answers and $X_i \sim \Binomial(5, p_i)$ with an examinee--specific ability $p_i$. The score distribution is wide and nearly symmetric: the counts of $X = 0,\ldots,5$ are $691, 3099, 4269, 4116, 4041, 3385$. Although the beta--binomial fit is acceptable in--sample, its shape constraints (unimodal beta prior) leave systematic discrepancies that a flexible prior can eliminate.
-
-\emph{Results.} Following the protocol above, the $19601$ examinees are split into a training set of $n_1 = 13721$ and a held--out test set of $n_2 = 5880$. Table \ref{tab5.dea} reports the in--sample comparison on the full data. For the out--of--sample evaluation, the BIC on the training set selects $K = 8$, whereas the inner five--fold cross--validation selects $K = 30$ (by validation log--likelihood) and $K = 26$ (by validation MSE). On the held--out test set the variant with $K=30$ performs best (test logLik $-10013.01$, test MSE $0.000123$), so $K=30$ is taken as the final degree. Table \ref{tab5.dea.cv} reports the final held--out test evaluation: the \BernBino\ model again achieves the largest test log--likelihood ($-10013.01$, about $62$ units higher than the best parametric model) and the smallest test L1 and test MSE (about $0.40$ and $0.20$ times those of the best parametric model). The estimated Bernstein prior of the ability, whose weights concentrate on the components $k = 6, 12, 7$ (i.e., a mixture of $\mBeta(7,8)$, $\mBeta(13,2)$ and $\mBeta(8,7)$), is a wide multi--component density that the two--parameter priors cannot reproduce. In summary, the proposed model again outperforms all competitors on the held--out test set of this large dataset.
-
-\begin{Table} \label{tab5.dea} {\rm \hspace{-0.2cm}{\bf .}
-In--sample comparison of the five fitted distributions for the de Ayala mathematics test data ($n=19601$, $m=5$).
-\vspace{-0.1cm}
-\begin{center}
-\renewcommand{\arraystretch}{1.1} \tabcolsep 0.07in \scriptsize
-\begin{tabular}{|l|c|r|r|r|r|r|r|r|}  \hline\hline
-    Model & \#par & \textsf{logLik} & \textsf{AIC} & \textsf{BIC} & L1 & MSE & $p$-value & $\textsf{Rank}_{L}$ \\ \hline
-    $\Binomial(5,p)$ & 1 & $-35797.74$ & $71597.49$ & $71605.37$ & 0.1978 & 0.006103 & 0.001 & 5 \\
-    $\BetaBino(5,\al,\be)$ & 2 & $-33516.01$ & $67036.01$ & $67051.78$ & 0.0671 & 0.000517 & 0.772 & 4 \\
-    Logit-N$(5)$ & 2 & $-33536.36$ & $67076.72$ & $67092.49$ & 0.0711 & 0.000571 & 0.734 & 3 \\
-    KM$(5)$ & 2 & $-33533.79$ & $67071.57$ & $67087.34$ & 0.0692 & 0.000549 & 0.987 & 2 \\
-    $\BernBino(5,30,\bla)$ & 31 & $-33351.85$ & $66731.70$ & $66842.06$ & 0.0288 & 0.000130 & 1.000 & 1 \\ \hline\hline
-\end{tabular}
-\end{center} }
-\end{Table}
-
-\begin{Table} \label{tab5.dea.cv} {\rm \hspace{-0.2cm}{\bf .}
-Out--of--sample comparison on the held--out test set ($n_2=5880$; models fitted on the training set only, $K=30$ by inner cross--validation) for the de Ayala data.
-\vspace{-0.1cm}
-\begin{center}
-\renewcommand{\arraystretch}{1.1} \tabcolsep 0.12in \small
-\begin{tabular}{|l|c|r|r|r|}  \hline\hline
-    Model & $K$ & test logLik & test L1 & test MSE \\ \hline
-    $\Binomial(5,p)$ & --- & $-10813.28$ & 0.2051 & 0.006657 \\
-    $\BetaBino(5,\al,\be)$ & --- & $-10075.45$ & 0.0736 & 0.000628 \\
-    Logit-N$(5)$ & --- & $-10082.10$ & 0.0774 & 0.000686 \\
-    KM$(5)$ & --- & $-10080.47$ & 0.0758 & 0.000657 \\
-    $\BernBino(5,30,\bla)$ & 30 & $-10013.01$ & 0.0294 & 0.000123 \\ \hline\hline
-\end{tabular}
-\end{center} }
-\end{Table}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{figures/plot17.png}
-    \caption{$\;$ de Ayala mathematics test data: (upper) observed score distribution on the held--out test set and fitted pmfs of the five models (fitted on the training set); (lower) corresponding residuals.}
-\end{figure}
-\label{fig5.dea}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\linewidth]{figures/plot18.png}
-    \caption{$\;$ Estimated prior densities $\pi(p)$ of the success probability under the four prior--based models for the two datasets (fitted on the training sets).}
-\end{figure}
-\label{fig5.prior}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\linewidth]{figures/plot19.png}
-    \caption{$\;$ Selection of the Bernstein degree $K$ on the training sets: (left) BIC curves; (right) average validation log--likelihood (solid) and MSE (dashed) of the inner five--fold cross--validation. Red points mark the final $K$.}
-\end{figure}
-\label{fig5.bic}
-
-In summary, on both real datasets the proposed \BernBino\ distribution is the best model by every out--of--sample criterion on a held--out test set that never participated in fitting or model selection, and it provides a flexible and interpretable estimate of the prior density of the success probability. These results confirm that the extra parameters of \BernBino\ are rewarded rather than punished when the data are sufficiently informative and the model is validated on unseen data.
+\cite{ZUL2014} 

@@ -136,3 +136,51 @@ python make_figures.py             # 作图（需 matplotlib / pandas）
    固定种子，取最优，避免局部最优。已与数值梯度核对（误差 ~1e-8）。
 4. **K 选择不泄漏**：K 只用训练集 BIC 或训练集内部 CV 选择，测试集完全不参与；
    BIC 与 CV 两种选择的模型都在测试集上检验，取更优者报告。
+
+
+---
+
+## 8. 模型设定的修正与两种 Bern-Bino 变体的对比（2026-09 更新）
+
+### 8.1 修正内容
+论文式 (2.5) 的共享系数回归模型为
+
+    eta_ik = phi_k + gamma_k * ( z_i^T beta ),   phi_0 = 0, gamma_0 = 1,
+
+其中 **z_i 是不含截距的协变量向量**，截距全部由各成分的 phi_k 承担。
+早期代码把截距放进了 z_i，导致 phi_k 与 gamma_k*beta_0 互为冗余、参数不可识别；
+`00_regression_lib.R` 中 `fit_bernreg()` / `bernreg_ll_grad()` 已按上式修正，
+调用时**必须传入不含截距的协变量矩阵 Z**（logistic / beta-binomial 仍用含截距的设计矩阵 X）。
+
+修正后该模型是可识别的：softmax 权重严格为正，gamma_0 = 1 固定了 beta 的尺度；
+数值上把 beta 乘 c、gamma_k 除以 c（k>=1）会显著改变对数似然，最优在 c = 1 附近
+（见 `results/me2_scale_check.csv`）。个别成分权重为 0 时（过参数化混合模型的常见现象）
+其自身参数不可识别、Hessian 奇异，故 Bern-Bino 系数的标准误不可得。
+
+### 8.2 两种 Bern-Bino 回归变体的对比
+- **变体 A（各成分独立回归系数）**：eta_ik = z_i^T beta_k，beta_0 = 0 为参照，自由参数 K*p；
+- **变体 B（论文的共享系数 + 缩放尺度）**：eta_ik = phi_k + gamma_k (z_i^T beta)，自由参数 2K + 4。
+
+两者都用**训练集内部 5 折 x 2 次重复交叉验证**（准则：验证对数似然）选择 K，
+再在测试集上与 logistic 回归、beta-binomial 回归比较。主要结果：
+
+| 模型 | 参数数 | K（CV） | train logLik | test logLik | test MSE | test MAE |
+|---|---|---|---|---|---|---|
+| Logistic | 5 | - | -1275.13 | -575.23 | 0.04144 | 0.1668 |
+| Beta-binomial | 6 | - | -1173.31 | -516.40 | 0.04156 | 0.1669 |
+| Bern-Bino A | 30 | 6 | -1150.61 | -509.64 | 0.04027 | 0.1644 |
+| **Bern-Bino B** | **16** | **6** | -1153.22 | **-507.32** | **0.03917** | **0.1621** |
+
+两个变体都选 K = 6，且都优于两个参数模型；**变体 B 用 16 个参数取得比变体 A（30 个参数）
+更好的样本外效果**，说明"共享回归系数 + 各成分缩放"不仅省参数，还起到正则化作用。
+
+### 8.3 新增文件
+| 文件 | 作用 |
+|---|---|
+| `06_corrected_regression_analysis.R` | 修正设定后的 Bern-Bino（变体 B）完整分析，输出 `results/me2_*.csv` |
+| `07_two_variants_comparison.R` | 变体 A 与变体 B 的 CV 选 K 与测试集对比，输出 `results/me3_*.csv` |
+| `make_comparison_figures.py` | 生成变体对比图 `fig_report_two_variants_K.png`、`fig_report_two_variants_test.png` |
+| `MathExam14W_regression_report.pdf` | 回归实例分析报告（英文，含两个变体的定义、选 K、参数估计、测试集对比与结论） |
+
+注：`03_export_fig_data.R`、`04_final_regression_results.R` 使用旧的（含截距）设定，已被
+`05/06/07` 取代，保留仅作历史记录。

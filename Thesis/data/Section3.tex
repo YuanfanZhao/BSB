@@ -1,5 +1,3 @@
-%!TEX root = BSB.tex
-
 \section{$\!\!\!\!\!\!\!$. Bayesian inferences} % Section 3
 
 Let $\{X_i\}_{i=1}^n \iid \BernBino(m, K, \bla)$ and the observed data $\Y{obs} = \{x_i\}_{i=1}^n$. We perform Bayesian inferences on parameters $\bla = (\la_0, \la_1, \dots, \la_K)^{\T} \in \bbT_{K+1}$; i.e., we will calculate the posterior mode via an MM algorithm and generate posterior samples via a DA algorithm. Finally, the posterior mean and Bayesian credible interval can be obtained based on posterior samples.
@@ -72,4 +70,4 @@ where $\ibW = (W_1, \ldots, W_n)^\top$ and $\ibN = (N_0, N_1, \ldots,N_K)^{\T}$ 
     \textbf{Compute the Bayesian CI:} $[\la_k^{\rm L},\; \la_k^{\rm U}] = [\la_k^{(\al/2)},\;\la_k^{(1-\al/2)}]$, $k=0, 1, \dots, K$, where $\la_k^{(q)}$ is the $q$-quantile of the posterior sample.
     \caption{\ Posterior mean and Bayesian CI via the DA algorithm}
 \end{algorithm}
-\DecMargin{0.1em} 
+\DecMargin{0.1em}

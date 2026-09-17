@@ -1,3 +1,5 @@
+# NOTE: superseded by 05_report_figures.R, which uses the corrected
+# Bern-Bino specification (intercept carried by phi_k, not by beta).
 # ============================================================================
 # 03_export_fig_data.R --- 导出作图数据（测试集拟合 pmf、先验密度、K 选择曲线）
 # ----------------------------------------------------------------------------

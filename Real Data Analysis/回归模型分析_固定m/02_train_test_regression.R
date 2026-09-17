@@ -1,3 +1,10 @@
+# NOTE (corrected specification): the Bern-Bino regression of Section 2.5 uses
+#   eta_ik = phi_k + gamma_k * (z_i^T beta) with z_i NOT containing an intercept
+#   (the intercept is carried by phi_k). Accordingly the Bern-Bino functions below
+#   receive the covariate matrix WITHOUT the intercept column, whereas logistic and
+#   beta-binomial regression keep the usual design matrix with an intercept.
+# See 06_corrected_regression_analysis.R and 07_two_variants_comparison.R for the
+# final, corrected analyses.
 # ============================================================================
 # 02_train_test_regression.R --- 训练/测试（样本外）回归模型比较（固定 m）
 # ----------------------------------------------------------------------------
@@ -75,8 +82,9 @@ run_dataset <- function(file, label, design_fun, Kmax = 10) {
   fit_log <- fit_logistic(X_tr, m, x_tr)
   ll_log  <- sum(dbinom(x_tr, m, fit_log$pred(X_tr), log = TRUE))   # 训练集 logLik
   fit_bb  <- fit_bbreg(X_tr, m, x_tr)
-  bern_bic <- bernreg_fit_bic(X_tr, m, x_tr, Kmax)
-  bern_cv  <- bernreg_fit_cv(X_tr, m, x_tr, Kmax)
+  Z_tr <- X_tr[, -1, drop = FALSE]      # covariates only (no intercept)
+  bern_bic <- bernreg_fit_bic(Z_tr, m, x_tr, Kmax)
+  bern_cv  <- bernreg_fit_cv(Z_tr, m, x_tr, Kmax)
 
   # 保存 K 选择曲线（BIC / CV）
   write.csv(bern_bic$curve, sprintf("results/kgrid_bic_%s.csv", label), row.names = FALSE)
@@ -87,10 +95,13 @@ run_dataset <- function(file, label, design_fun, Kmax = 10) {
               bern_bic$K, bern_cv$K, (proc.time() - t0)[3]))
 
   # ---- 测试集检验 ----
-  ev <- function(md, fit, K = NULL) c(
-    test_logLik = test_loglik(md, fit, X_te, m, x_te, K),
-    test_MAE    = test_mae(md, fit, X_te, m, x_te, K),
-    test_MSE    = test_mse(md, fit, X_te, m, x_te, K))
+  Z_te <- X_te[, -1, drop = FALSE]
+  ev <- function(md, fit, K = NULL) {
+    D <- if (md == "bernreg") Z_te else X_te     # Bern-Bino takes covariates only
+    c(test_logLik = test_loglik(md, fit, D, m, x_te, K),
+      test_MAE    = test_mae(md, fit, D, m, x_te, K),
+      test_MSE    = test_mse(md, fit, D, m, x_te, K))
+  }
   aic <- function(ll, npar) 2 * npar - 2 * ll
   bic <- function(ll, npar) npar * log(n1) - 2 * ll
   rows <- list(

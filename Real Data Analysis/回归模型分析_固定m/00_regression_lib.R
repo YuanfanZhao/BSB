@@ -103,15 +103,29 @@ bbreg_pmf <- function(a, b, m, x) {
 }
 
 # ----------------------------------------------------------------------------
-# 3. Bern-Bino 回归（论文第 2.5 节，固定 m 版本）
-#    对数似然与解析梯度（已与数值梯度核对，误差 ~1e-8，BFGS 稳定收敛）
+# 3. Bern-Bino 回归（论文第 2.5 节，固定 m 版本，已修正模型设定）
 # ----------------------------------------------------------------------------
-bernreg_ll_grad <- function(theta, X, m, x, A_tab) {
+# 模型：
+#   X_i | p_i ~ Binomial(m, p_i),   p_i ~ Bernstein(K, lambda_i),
+#   lambda_ik = exp(eta_ik) / sum_l exp(eta_il),
+#   eta_ik    = phi_k + gamma_k * ( z_i^T beta ),      k = 0, 1, ..., K,
+# 其中
+#   * z_i 为【不含截距】的协变量向量（长度 p'）；
+#   * phi_k 为第 k 个 Bernstein 成分的【专属截距】，phi_0 = 0 作为基线；
+#   * beta  为所有成分【共享】的回归系数，只作用于非截距协变量；
+#   * gamma_k 为第 k 个成分在共享线性指标上的【缩放尺度】，gamma_0 = 1 作为基线。
+# 参数个数 = 2K + p'（phi_0 与 gamma_0 固定，不计入）。
+#
+# 【关键】截距项必须全部由 phi_k 承担，不能包含在 z_i 中；否则
+#   phi_k + gamma_k * beta_0 中的 phi_k 与 gamma_k*beta_0 互为冗余，
+#   会引入额外的不可识别方向。因此本函数要求 Z 为“纯协变量”矩阵。
+# ----------------------------------------------------------------------------
+bernreg_ll_grad <- function(theta, Z, m, x, A_tab) {
   K <- nrow(A_tab) - 1
-  n <- length(x); p <- ncol(X)
+  n <- length(x); p <- ncol(Z)
   phi <- c(0, theta[1:K]); gam <- c(1, theta[(K + 1):(2 * K)])
   beta <- theta[(2 * K + 1):(2 * K + p)]
-  Zb <- as.numeric(X %*% beta)
+  Zb <- as.numeric(Z %*% beta)                               # 共享线性指标（无截距）
   eta <- outer(Zb, gam) + matrix(rep(phi, each = n), n, K + 1)
   maxe <- apply(eta, 1, max)
   lam <- exp(eta - maxe); lam <- lam / rowSums(lam)         # softmax，n x (K+1)
@@ -122,32 +136,67 @@ bernreg_ll_grad <- function(theta, X, m, x, A_tab) {
   ll <- sum(lchoose_mx(m, x) + log(dens))
   g_phi  <- colSums(diff[, 2:(K + 1), drop = FALSE])         # j = 1..K
   g_gam  <- colSums(diff[, 2:(K + 1), drop = FALSE] * Zb)    # j = 1..K
-  g_beta <- colSums(as.numeric(diff %*% gam) * X)            # p 维
+  g_beta <- colSums(as.numeric(diff %*% gam) * Z)            # p 维
   list(ll = ll, grad = c(g_phi, g_gam, g_beta))
 }
 
-fit_bernreg <- function(X_tr, m, x_tr, K, start = NULL, maxit = 800, nstart = 8,
-                         seed = 123) {
-  p <- ncol(X_tr)
+# 边缘（不含协变量）Bern-Bino 的 MM 拟合，用于为 phi_k 提供初始值：
+#   pmf(x) = C(m,x) * sum_k lambda_k a_k(x),  lambda_k^{new} = sum_x c_x gamma_{kx}/n
+bern_marginal_mm <- function(m, x, K, maxit = 100000, eps = 1e-12) {
+  counts <- tabulate(x + 1, nbins = m + 1); n <- sum(counts)
+  A <- bern_coef_table(m, K)                  # (K+1) x (m+1)
+  lc <- lchoose_mx(m, 0:m)
+  lam <- rep(1 / (K + 1), K + 1)
+  ll <- sum(counts * (lc + log(as.numeric(lam %*% A))))
+  for (it in 1:maxit) {
+    den <- as.numeric(lam %*% A)
+    prop <- (lam * A) / rep(den, each = K + 1)
+    lam_new <- as.numeric(prop %*% counts) / n
+    ll_new <- sum(counts * (lc + log(as.numeric(lam_new %*% A))))
+    if (abs(ll_new - ll) < eps * (abs(ll) + 1e-12)) { lam <- lam_new; ll <- ll_new; break }
+    lam <- lam_new; ll <- ll_new
+  }
+  list(lambda = lam, ll = ll, iter = it)
+}
+
+# Z_tr：不含截距的协变量矩阵（n1 x p'）
+fit_bernreg <- function(Z_tr, m, x_tr, K, start = NULL, maxit = 800, nstart = 12,
+                        nindep = 12, seed = 123) {
+  p <- ncol(Z_tr)
   A_tab <- bern_coef_table(m, K)
-  fn <- function(th) -bernreg_ll_grad(th, X_tr, m, x_tr, A_tab)$ll
-  gr <- function(th) -bernreg_ll_grad(th, X_tr, m, x_tr, A_tab)$grad
+  fn <- function(th) -bernreg_ll_grad(th, Z_tr, m, x_tr, A_tab)$ll
+  gr <- function(th) -bernreg_ll_grad(th, Z_tr, m, x_tr, A_tab)$grad
+  extra_starts <- list()
+  glm0 <- glm(cbind(x_tr, m - x_tr) ~ Z_tr, family = binomial)
+  slopes <- coef(glm0)[-1]
   if (is.null(start)) {
-    glm0 <- glm(cbind(x_tr, m - x_tr) ~ X_tr[, -1, drop = FALSE], family = binomial)
-    start <- c(rep(0, K), rep(1, K), coef(glm0))
+    # 共享回归系数取逻辑回归的斜率（截距不进入 beta，全部由 phi_k 承担）。
+    # 起点 1（主）：用【边缘 Bern-Bino 的 MM 解】给出 phi_k，gamma_k = 1。
+    mg <- bern_marginal_mm(m, x_tr, K)
+    ph <- log(pmax(mg$lambda, 1e-12)); ph <- ph - ph[1]      # 使 phi_0 = 0
+    start <- c(ph[-1], rep(1, K), slopes)
+    # 起点 2、3：各成分同处基线（phi_k = 0）或取逻辑回归截距水平。
+    extra_starts <- list(c(rep(0, K), rep(1, K), slopes),
+                         c(rep(coef(glm0)[1], K), rep(1, K), slopes))
   }
-  # 多起点（multi-start）：基础起点（逻辑回归系数构造）恒在首位，再补若干随机扰动
-  # 起点（尺度 0.6 / 1.5 / 2.5 交替），取最优者，避免局部最优；固定种子保证可复现。
-  # 注意：不使用"上一 K 的解"作唯一锚点，因为劣质局部解会沿 K 链传播。
-  starts <- list(start)
-  if (nstart > 1) {
-    set.seed(2024)
-    scales <- c(0.6, 1.5, 2.5)
-    for (s in 2:nstart) {
-      sc <- scales[(s - 2) %% 3 + 1]
-      starts[[s]] <- start + c(rnorm(2 * K, 0, sc), rnorm(p, 0, 0.3 * sc))
-    }
+  # 多起点（multi-start）：基础起点恒在首位，再补若干随机扰动起点
+  # （尺度 0.6 / 1.5 / 2.5 交替），取最优者；固定种子保证可复现。
+  anchors <- c(list(start), extra_starts)
+  starts <- anchors
+  # (i) 锚定扰动起点：围绕三个确定性起点做不同尺度的扰动
+  set.seed(seed)
+  scales <- c(0.6, 1.5, 2.5, 4)
+  while (length(starts) < nstart) {
+    i <- length(starts) - length(anchors)
+    sc <- scales[i %% length(scales) + 1]
+    a  <- anchors[[i %% length(anchors) + 1]]
+    starts[[length(starts) + 1]] <- a + c(rnorm(2 * K, 0, sc), rnorm(p, 0, 0.3 * sc))
   }
+  # (ii) 独立随机起点：不锚定在边缘解上，用于探索“所有成分都被激活”的解。
+  # 似然曲面高度多峰，独立随机起点是找到全局最优的关键，nindep 可调大。
+  set.seed(seed + 1)
+  for (s in seq_len(nindep)) starts[[length(starts) + 1]] <-
+    c(rnorm(K, 0, 2), 1 + rnorm(K, 0, 3), slopes + rnorm(p, 0, 0.5))
   best <- NULL
   for (st in starts) {
     opt <- optim(st, fn, gr = gr, method = "BFGS",
@@ -162,37 +211,113 @@ fit_bernreg <- function(X_tr, m, x_tr, K, start = NULL, maxit = 800, nstart = 8,
     }
   }
   theta <- best$theta
-  list(npar = 2 * K + p, K = K, theta = theta, ll = best$ll, conv = best$conv,
-       pred = function(X) {
-         p <- ncol(X)
+  list(npar = 2 * K + p, pz = p, K = K, theta = theta, ll = best$ll, conv = best$conv,
+       pred = function(Z) {
+         p <- ncol(Z)
          phi <- c(0, theta[1:K]); gam <- c(1, theta[(K + 1):(2 * K)])
          beta <- theta[(2 * K + 1):(2 * K + p)]
-         Zb <- as.numeric(X %*% beta)
-         n <- nrow(X)
+         Zb <- as.numeric(Z %*% beta)
+         n <- nrow(Z)
          eta <- outer(Zb, gam) + matrix(rep(phi, each = n), n, K + 1)
          maxe <- apply(eta, 1, max)
          lam <- exp(eta - maxe); lam <- lam / rowSums(lam)
-         list(lambda = lam, phi = phi, gam = gam, beta = beta)
+         list(lambda = lam, phi = phi, gam = gam, beta = beta, index = Zb)
        })
 }
 
+# Z：不含截距的协变量矩阵；lambda 为 n x (K+1) 权重矩阵
 bernreg_pmf <- function(lambda, m, x, A_tab) {
   exp(lchoose_mx(m, x)) * as.numeric(lambda %*% A_tab[, x + 1])
 }
 
+
+# ----------------------------------------------------------------------------
+# 3b. Bern-Bino 回归（变体 A：每个成分各自的回归系数）
+# ----------------------------------------------------------------------------
+# 模型：
+#   lambda_ik = exp(eta_ik) / sum_l exp(eta_il),
+#   eta_ik    = z_i^T beta_k,          k = 0, 1, ..., K,
+# 其中 z_i 为含截距的协变量向量（长度 p）。
+# 可识别性：softmax 对"同一条观测的所有 eta_k 同时加上 z_i^T delta"不变，
+#   故 beta_0, ..., beta_K 之间存在 p 维不可识别方向。取 beta_0 = 0（参照成分）
+#   即可完全识别，此时自由参数为 K * p 个（theta = vec(beta_1, ..., beta_K)）。
+# ----------------------------------------------------------------------------
+bernA_ll_grad <- function(theta, Z, m, x, A_tab) {
+  K <- nrow(A_tab) - 1
+  n <- length(x); p <- ncol(Z)
+  B <- matrix(theta, nrow = p, ncol = K)          # p x K，第 k 列 = beta_k
+  eta <- cbind(0, Z %*% B)                        # n x (K+1)，成分 0 为参照
+  maxe <- apply(eta, 1, max)
+  lam <- exp(eta - maxe); lam <- lam / rowSums(lam)
+  A <- A_tab[, x + 1, drop = FALSE]
+  P <- t(lam) * A
+  dens <- colSums(P)
+  diff <- t(P) / dens - lam                       # n x (K+1)
+  ll <- sum(lchoose_mx(m, x) + log(dens))
+  G <- t(Z) %*% diff[, -1, drop = FALSE]          # p x K
+  list(ll = ll, grad = as.numeric(G))
+}
+
+fit_bernregA <- function(Z_tr, m, x_tr, K, start = NULL, maxit = 2000,
+                         nstart = 1, nindep = 6, seed = 99) {
+  p <- ncol(Z_tr)
+  A_tab <- bern_coef_table(m, K)
+  fn <- function(th) -bernA_ll_grad(th, Z_tr, m, x_tr, A_tab)$ll
+  gr <- function(th) -bernA_ll_grad(th, Z_tr, m, x_tr, A_tab)$grad
+  starts <- list(rep(0, K * p))                    # 均匀权重起点
+  set.seed(seed)
+  for (s in seq_len(nindep))
+    starts[[length(starts) + 1]] <- rnorm(K * p, 0, 0.5)
+  best <- NULL
+  for (st in starts) {
+    o <- tryCatch(optim(st, fn, gr = gr, method = "BFGS",
+                        control = list(maxit = maxit, reltol = 1e-10)),
+                  error = function(e) NULL)
+    if (!is.null(o) && is.finite(o$value) && (is.null(best) || -o$value > best$ll))
+      best <- list(theta = o$par, ll = -o$value, conv = o$convergence)
+  }
+  theta <- best$theta
+  list(npar = K * p, K = K, pz = p, theta = theta, ll = best$ll, conv = best$conv,
+       pred = function(Z) {
+         p <- ncol(Z)
+         B <- matrix(theta, nrow = p, ncol = K)
+         eta <- cbind(0, Z %*% B)
+         mx <- apply(eta, 1, max)
+         lam <- exp(eta - mx); lam <- lam / rowSums(lam)
+         list(lambda = lam, B = B)
+       })
+}
+
+# K 选择（变体 A）：训练集 BIC 曲线 与 训练集内部 5 折交叉验证
+bernA_fit_bic <- function(Z_tr, m, x_tr, Kmax = 10, nindep = 6) {
+  n1 <- length(x_tr)
+  curve <- data.frame(K = 1:Kmax, train_ll = NA, npar = NA, BIC = NA)
+  best <- NULL
+  for (K in 1:Kmax) {
+    fit <- fit_bernregA(Z_tr, m, x_tr, K, nindep = nindep)
+    bic <- fit$npar * log(n1) - 2 * fit$ll
+    curve[K, c("train_ll", "npar", "BIC")] <- list(fit$ll, fit$npar, bic)
+    if (is.null(best) || bic < best$bic) best <- list(K = K, fit = fit, bic = bic)
+  }
+  best$curve <- curve
+  best
+}
+
+# 注意：以下 K 选择函数与 test_* 评价函数的第一个矩阵参数，对 bernreg 而言
+# 必须是【不含截距】的协变量矩阵 Z；对 logistic / bbreg 则仍是含截距的设计矩阵 X。
 # ----------------------------------------------------------------------------
 # 4. K 选择（只在训练集上进行）
 #    (a) 训练集 BIC：K = 1..Kmax，取 BIC 最小者
-#    (b) 训练集内部 5 折 x 3 次交叉验证：验证准则为对数似然，取均值最大者
+#    (b) 训练集内部 5 折交叉验证：验证准则为对数似然，取均值最大者
 # ----------------------------------------------------------------------------
-bernreg_fit_bic <- function(X_tr, m, x_tr, Kmax = 10, nstart = 12) {
+bernreg_fit_bic <- function(Z_tr, m, x_tr, Kmax = 10, nstart = 12, nindep = 12) {
   n1 <- length(x_tr)
   best <- NULL
   curve <- data.frame(K = 1:Kmax, train_ll = NA, npar = NA, BIC = NA)
   for (K in 1:Kmax) {
     # 每个 K 都用逻辑回归系数构造的基础起点（fit_bernreg 内部会多起点），
     # 不使用"上一 K 的解"作锚点，避免劣质局部解沿 K 链传播。
-    fit <- fit_bernreg(X_tr, m, x_tr, K, start = NULL, nstart = nstart)
+    fit <- fit_bernreg(Z_tr, m, x_tr, K, start = NULL, nstart = nstart, nindep = nindep)
     bic <- fit$npar * log(n1) - 2 * fit$ll
     curve$train_ll[K] <- fit$ll; curve$npar[K] <- fit$npar; curve$BIC[K] <- bic
     if (is.null(best) || bic < best$bic) best <- list(K = K, fit = fit, bic = bic)
@@ -201,8 +326,8 @@ bernreg_fit_bic <- function(X_tr, m, x_tr, Kmax = 10, nstart = 12) {
   best
 }
 
-bernreg_fit_cv <- function(X_tr, m, x_tr, Kmax = 10, folds = 5, reps = 1,
-                         seed = 6789, nstart = 5) {
+bernreg_fit_cv <- function(Z_tr, m, x_tr, Kmax = 10, folds = 5, reps = 1,
+                           seed = 6789, nstart = 8, nindep = 8) {
   n1 <- length(x_tr)
   set.seed(seed)
   mean_val <- numeric(Kmax)
@@ -212,16 +337,17 @@ bernreg_fit_cv <- function(X_tr, m, x_tr, Kmax = 10, folds = 5, reps = 1,
       foldid <- sample(rep(1:folds, length.out = n1))
       for (f in 1:folds) {
         va <- which(foldid == f); tr <- which(foldid != f)
-        fit <- fit_bernreg(X_tr[tr, , drop = FALSE], m, x_tr[tr], K,
-                           start = start, nstart = nstart)
-        v <- c(v, test_loglik("bernreg", fit, X_tr[va, , drop = FALSE], m, x_tr[va], K))
+        fit <- fit_bernreg(Z_tr[tr, , drop = FALSE], m, x_tr[tr], K,
+                           start = start, nstart = nstart, nindep = nindep)
+        v <- c(v, test_loglik("bernreg", fit, Z_tr[va, , drop = FALSE], m, x_tr[va], K))
         start <- fit$theta
       }
     }
     mean_val[K] <- mean(v)
   }
   K <- which.max(mean_val)
-  list(K = K, fit = fit_bernreg(X_tr, m, x_tr, K, nstart = 12), mean_val = mean_val)
+  list(K = K, fit = fit_bernreg(Z_tr, m, x_tr, K, nstart = 12, nindep = nindep),
+       mean_val = mean_val)
 }
 
 # ----------------------------------------------------------------------------
